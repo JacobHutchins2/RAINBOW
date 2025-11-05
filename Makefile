@@ -1,4 +1,4 @@
-inlcude Makefile.inc
+include Makefile.inc
 
 all:	kernel.img kernel.dis
 
