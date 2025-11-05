@@ -5,7 +5,7 @@
 //The start of the end.
 int kernal_main(){
 
-    // Regester base setup
+    // Register base setup
 
     // hardware initialization / interrupts
 
