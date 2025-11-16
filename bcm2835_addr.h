@@ -73,3 +73,60 @@
 #define I2C_S_CLKT		(1 << 9)  // Clock Stretch Timeout
 
 /*==================================================================================*/
+
+/*======================================= IRQ ======================================*/
+// base address for interrupt controller
+
+#define IRQ_BASE        (0xb000)       // IRQ base address
+
+#define IRQ_BASIC_PENDING        (IRQ_BASE + 0x200) // Basic Pending
+#define IRQ_BASIC_PENDING_TIMER  (1 << 0)        // Timer interrupt
+#define IRQ_BASIC_PENDING_IRQ    (1 << 19)       // IRQ interrupt
+
+#define IRQ_ENABLE_IRQ1    (IRQ_BASE + 0x210) // Enable IRQs 1-31
+#define IRQ_ENABLE_BASIC   (IRQ_BASE + 0x218) // Enable Basic IRQs
+#define IRQ_DISABLE_IRQ1   (IRQ_BASE + 0x21C) // Disable IRQs 1-31
+#define IRQ_DISABLE_BASIC  (IRQ_BASE + 0x224) // Disable Basic IRQs
+
+#define IRQ0_PENDING0		(IRQ_BASE+0x200)    // IRQ Pending 0
+#define IRQ0_PENDING1		(IRQ_BASE+0x204)    // IRQ Pending 1
+
+#define IRQ0_SET_EN_0		(IRQ_BASE+0x210)    // IRQ Set Enable 0
+#define IRQ0_SET_EN_1		(IRQ_BASE+0x214)    // IRQ Set Enable 1
+
+#define IRQ0_CLR_EN_0		(IRQ_BASE+0x220)    // IRQ Clear Enable 0
+#define IRQ0_CLR_EN_1		(IRQ_BASE+0x224)    // IRQ Clear Enable 1
+
+#define IRQ0_STATUS0		(IRQ_BASE+0x230)    // IRQ Status 0
+#define IRQ0_STATUS1		(IRQ_BASE+0x234)    // IRQ Status 1
+
+/*==================================================================================*/
+
+/*======================================= UART ======================================*/
+// base address for UART0 peripheral
+// good old serial
+#define UART0_BASE      (0x201000)      // UART0 base address
+
+#define UART0_DR        (UART0_BASE + 0x00) // Data Register
+#define UART0_RSRECR    (UART0_BASE + 0x04) // Receive
+
+#define UART0_FR        (UART0_BASE + 0x18) // Flag Register
+#define UART0_FR_TXFE   (1 << 7)        // Transmit FIFO Empty
+#define UART0_FR_RXFF   (1 << 6)        // Receive FIFO Full
+#define UART0_FR_TXFF   (1 << 5)        // Transmit FIFO Full
+#define UART0_FR_RXFE   (1 << 4)        // Receive FIFO Empty
+#define UART0_FR_BUSY   (1 << 3)        // UART Busy
+
+#define UART0_ILPR      (UART0_BASE + 0x20) // IrDA Low-Power Register
+#define UART0_IBRD      (UART0_BASE + 0x24) // Integer Baud
+#define UART0_FBRD      (UART0_BASE + 0x28) // Fractional Baud
+
+#define UART0_LCRH      (UART0_BASE + 0x2C) // Line Control
+#define UART0_LCRH_SPS          (1 << 7)        // Stick Parity Select
+#define UART0_LCRH_WLEN_5BIT	(0<<5)      // Word Length 5 bits
+#define UART0_LCRH_WLEN_6BIT	(1<<5)      // Word Length 6 bits
+#define UART0_LCRH_WLEN_7BIT	(2<<5)      // Word Length 7 bits
+#define UART0_LCRH_WLEN_8BIT	(3<<5)      // Word Length 8 bits
+
+
+/*===================================================================================*/
