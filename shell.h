@@ -1,0 +1,1 @@
+uint32_t rainbow_shell(void);

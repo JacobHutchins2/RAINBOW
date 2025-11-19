@@ -29,10 +29,32 @@ int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
 }
 
 int i2c_init(void) {
+    // Set to ALT0 for I2C1 
+	uint32_t old;
+
+	// GPIO 2 
+	old = bcm2835_read(GPIO_GPFSEL0);
+	old &= ~(7<<6);  // Clear bits 8-6 
+	old |= (4<<6);   // Set to ALT0 
+	bcm2835_write(GPIO_GPFSEL0, old);
+
+	// GPIO 3 
+	old = bcm2835_read(GPIO_GPFSEL0);
+	old &= ~(7<<9);  // Clear bits 11-9 
+	old |= (4<<9);   // Set to ALT0 
+	bcm2835_write(GPIO_GPFSEL0, old);
+
+	bcm2835_write(GPIO_GPPUD, GPIO_GPPUD_PULLUP);	// Enable pull-up resistors
+	usleep(150);
+	bcm2835_write(GPIO_GPPUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
+	usleep(150);
+	bcm2835_write(GPIO_GPPUD, GPIO_GPPUD_DISABLE);	// Remove the control signal
+	bcm2835_write(GPIO_GPPUDCLK0, 0);	// Remove the clock
     // Set I2C clock divider for 100kHz (250MHz clock)
     bcm2835_write(I2C_DIV, 2500);
     // Enable I2C
-    bcm2835_write(I2C_C, I2C_C_I2CEN);
+    bcm2835_write(I2C_C, I2C_C_CLEAR); // Clear FIFO
+    bcm2835_write(I2C_C, I2C_C_I2CEN); 
     return 0;
 }
 

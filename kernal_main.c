@@ -1,5 +1,5 @@
-//#include <stddef.h>
-//#include <stdint.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include "bcm2835_addr.h"
 #include "mmio.h"
@@ -9,7 +9,7 @@
 // inlcude header of header files
 
 //The start of the end.
-int kernal_main(){
+void kernal_main(uint32_t r0, uint32_t r1, uint32_t r2){
 
     // active LED start to show a heartbeat
     heartbeat();
@@ -19,22 +19,22 @@ int kernal_main(){
 
     // hardware initialization / interrupts
     uart_init();
-    spi_init();
-    interrupt_enable();
+    //spi_init();
+    //interrupt_enable();
     // timer setup
-    timer_init();
+    //timer_init();
 
     // sensor initialization / control
     i2c_init();
 
     // data processing
-    moisture_data();
+    //moisture_data();
 
     // display data
-    moisture_display();
+    //moisture_display();
 
     // water output control
-    pump_control();
+    //pump_control();
 
     // enter shell/testing environment
     rainbow_shell();
