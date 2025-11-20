@@ -50,6 +50,7 @@ int i2c_init(void) {
 	usleep(150);
 	bcm2835_write(GPIO_GPPUD, GPIO_GPPUD_DISABLE);	// Remove the control signal
 	bcm2835_write(GPIO_GPPUDCLK0, 0);	// Remove the clock
+    
     // Set I2C clock divider for 100kHz (250MHz clock)
     bcm2835_write(I2C_DIV, 2500);
     // Enable I2C
