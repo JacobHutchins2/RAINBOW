@@ -127,6 +127,32 @@
 #define UART0_LCRH_WLEN_6BIT	(1<<5)      // Word Length 6 bits
 #define UART0_LCRH_WLEN_7BIT	(2<<5)      // Word Length 7 bits
 #define UART0_LCRH_WLEN_8BIT	(3<<5)      // Word Length 8 bits
+#define UART0_LCRH_FEN          (1<<4)      // enable FIFOs
+#define UART0_LCRH_STP2         (1<<3)      // enable 2 stop bits
+#define UART0_LCRH_EPS          (1<<2)      // even parity selection
+#define UART0_LCRH_PEN          (1<<1)      // parity enable
+#define UART0_LCRH_BRK          (1<<0)      // break after next character
 
+#define UART0_CR        (UART0_BASE + 0x30)
+#define UART0_CR_CTSEN          (1<<15)     // enable CTS flow
+#define UART0_CR_RTSEN          (1<<14)     // enable RTS flow
+#define UART0_CR_RTS            (1<<11)     // request to send
+#define UART0_CR_RXE            (1<<9)      // enable receive
+#define UART0_CR_TXE            (1<<8)      // enable transmit
+#define UART0_CR_LBE            (1<<7)      // enable loopback
+#define UART0_CR_UARTEN         (1<<0)      // enable UART
+
+#define UART0_IFLS	(UART0_BASE + 0x34)     // UART interrupt selector
+#define UART0_IMSC  (UART0_BASE + 0x38)     // interrupt mask set/clear
+#define UART0_IMSC_OE           (1<<10)     // raw interrupt overrun status
+#define UART0_IMSC_BE           (1<<9)      // raw interrupt break status
+#define UART0_IMSC_PE           (1<<8)      // raw interrupt parity status
+#define UART0_IMSC_FE           (1<<7)      // raw interrupt framing status
+#define UART0_IMSC_RT           (1<<6)      // receive timeout status
+#define UART0_IMSC_TX           (1<<5)      // transmit interrupt status
+#define UART0_IMSC_CTS          (1<<1)      // UART flow control status
+#define UART0_RIS	(UART0_BASE + 0x3C)     // 
+#define UART0_MIS	(UART0_BASE + 0x40)
+#define UART0_ICR	(UART0_BASE + 0x44)
 
 /*===================================================================================*/
