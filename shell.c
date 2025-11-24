@@ -6,49 +6,42 @@
 #include "mmio.h"
 #include "bcm2835_addr.h"
 #include "delay.h"
+#include "i2c.h"
+#include "string.h"
 
 uint32_t rainbow_shell(void) {
-    uint32_t ch;
-    char buffer[256];
-    int input_len = 0;
 
-    /* Enter our "shell" */
-    uart_puts("\r\nWelcome to the Rainbow Shell!\r\nType 'help' for a list of commands.\r\n> ");
+	uint32_t ch;
+	char buffer[256];
+	int input_len = 0;
+	
+	/* Enter our "shell" */
 
-    while (1) {
-        ch = uart_getc();
+	while (1) {
 
-        if (ch == '\r' || ch == '\n') { // Enter key
-            buffer[input_len] = '\0'; // Null-terminate the string
-            uart_puts("\r\n"); // New line
+		printf("--> ");	/* print a prompt character */
 
-            // Process the input command
-            if(strcmp(buffer, "help") == 0) {
-                uart_puts("Supported commands:\r\n");
-                uart_puts("  clear: clears the screen\r\n");
-            } 
-            else if(strcmp(buffer, "clear") == 0) {
-                uart_puts("\033[2J\033[H"); // ANSI escape sequence to clear screen
-            } 
-            else {
-                uart_puts("Unknown command. Type 'help' for a list of commands.\r\n");
-            }
+		while(1) {
+			ch=getchar();
 
-            // Reset for next input
-            input_len = 0;
-            uart_puts("--> "); // Prompt
-        } 
-        else if (ch == '\b' || ch == 127) {  // tracks backspace key
-            if (input_len > 0) {
-                input_len--;
-                uart_puts("\b \b"); // Erase character from terminal
-            }
-        } 
-        else if (input_len < sizeof(buffer) - 1) { // tracks characterss
-            buffer[input_len++] = (char)ch;
-            uart_send(ch); // Echo character
-        }
-    }
+			/* handle Enter being pressed */
+			if (ch=='\n' || ch=='\r') {
+				
+				buffer[input_len] = '\0';		 //null terminated
+				parse_input(buffer);
+				
+				buffer[0] = '\0';				 //clear buffer
+				input_len = 0;
+				break;
+			}
 
-    return 0;
+			else{
+				putchar(ch);
+				if (input_len < (int)(sizeof(buffer) - 1)) {		// Save to buffer if space remains
+					buffer[input_len++] = ch;						// otherwise ignore excess characters
+				}
+			}
+		}
+
+	}
 }

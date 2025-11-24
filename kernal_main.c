@@ -5,6 +5,8 @@
 #include "mmio.h"
 #include "delay.h"
 #include "active_led_init.h"
+#include "serial.h"
+#include "i2c.h"
 
 // inlcude header of header files
 

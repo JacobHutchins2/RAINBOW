@@ -79,7 +79,7 @@ int printk(char *string,...){
 
 	va_end(ap);
 
-	console_write(buffer,buffer_pointer);
+	uart_write(buffer,buffer_pointer);      // change to whatever display will be used
 
 	return buffer_pointer;
 }

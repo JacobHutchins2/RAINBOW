@@ -1,0 +1,1 @@
+static int parse_input(char *string);
