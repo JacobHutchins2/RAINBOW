@@ -23,33 +23,28 @@ uint32_t rainbow_shell(void) {
             uart_puts("\r\n"); // New line
 
             // Process the input command
-            if (strcmp(buffer, "help") == 0) {
+            if(strcmp(buffer, "help") == 0) {
                 uart_puts("Supported commands:\r\n");
-                uart_puts("  print: prints hello world\r\n");
                 uart_puts("  clear: clears the screen\r\n");
-                uart_puts("  time: shows uptime in seconds\r\n");
-            } else if (strcmp(buffer, "print") == 0) {
-                uart_puts("Hello World!\r\n");
-            } else if (strcmp(buffer, "clear") == 0) {
+            } 
+            else if(strcmp(buffer, "clear") == 0) {
                 uart_puts("\033[2J\033[H"); // ANSI escape sequence to clear screen
-            } else if (strcmp(buffer, "time") == 0) {
-                uint32_t ticks = get_system_time(); // Assume this function gets system uptime
-                char time_str[50];
-                sprintf(time_str, "Uptime: %d seconds\r\n", ticks);
-                uart_puts(time_str);
-            } else {
+            } 
+            else {
                 uart_puts("Unknown command. Type 'help' for a list of commands.\r\n");
             }
 
             // Reset for next input
             input_len = 0;
-            uart_puts("> "); // Prompt
-        } else if (ch == '\b' || ch == 127) { // Backspace key
+            uart_puts("--> "); // Prompt
+        } 
+        else if (ch == '\b' || ch == 127) {  // tracks backspace key
             if (input_len > 0) {
                 input_len--;
                 uart_puts("\b \b"); // Erase character from terminal
             }
-        } else if (input_len < sizeof(buffer) - 1) { // Regular character
+        } 
+        else if (input_len < sizeof(buffer) - 1) { // tracks characterss
             buffer[input_len++] = (char)ch;
             uart_send(ch); // Echo character
         }

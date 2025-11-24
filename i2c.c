@@ -3,6 +3,7 @@
 #include "i2c.h"
 #include "bcm2835.h"
 #include "mmio.h"
+#include "printk.h"
 
 int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
     
@@ -26,6 +27,7 @@ int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
             return -1; // Error occurred
         }
     }
+    return 0;
 }
 
 int i2c_init(void) {
@@ -56,6 +58,8 @@ int i2c_init(void) {
     // Enable I2C
     bcm2835_write(I2C_C, I2C_C_CLEAR); // Clear FIFO
     bcm2835_write(I2C_C, I2C_C_I2CEN); 
+
+    printk("The program made it here!");        // debugging
     return 0;
 }
 
@@ -81,6 +85,7 @@ void i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
             return -1; // Error occurred
         }
     }
+    return 0;
 }
 
 int i2c_scan(void) {
@@ -105,4 +110,5 @@ int i2c_scan(void) {
             }
         }
     }
+    return 0;
 }
