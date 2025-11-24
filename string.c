@@ -4,6 +4,8 @@
 #include "bcm2835_addr.h"
 #include "delay.h"
 #include "string.h"
+#include "i2c.h"
+#include "printk.h"
 
 #define ESC "\033"			// ANSI Escape character
 
@@ -24,19 +26,23 @@ int compare(char *s1, char *s2) {
 static int parse_input(char *string) {
 
 	if (compare(string,"help")) {		//help command
-		printf("\nSupported commands:\n");
-		printf("  print: prints hello world\n");
-		printf("  clear: clears the screen\n");
-		printf("  time: shows uptime in seconds\n");
+		printk("\nSupported commands:\n");
+		printk("clear: clears the screen\n");
 		putchar('\r');
 		putchar('\n');   // line feed
 	}
 
 	if(compare(string, "clear")){
-		printf(ESC "[2J" ESC "[H"); 				// Send ANSI escape sequence to clear screen
+		printk(ESC "[2J" ESC "[H"); 				// Send ANSI escape sequence to clear screen
 		putchar('\r');
 		putchar('\n');   // line feed
 	}
+
+    if(compare(string, "i2c_scan")){
+        i2c_scan();     // looking at connected devices
+        putchar('\r');
+		putchar('\n');   // line feed
+    }
 
 	else{
 		putchar('\r');   // carriage return		//new line when not a command

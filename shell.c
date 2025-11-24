@@ -17,7 +17,7 @@ uint32_t rainbow_shell(void) {
 	
 	/* Enter our "shell" */
 
-	while (1) {
+	while(1) {
 
 		printf("--> ");	/* print a prompt character */
 
@@ -42,6 +42,5 @@ uint32_t rainbow_shell(void) {
 				}
 			}
 		}
-
 	}
 }
