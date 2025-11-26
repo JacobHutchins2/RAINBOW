@@ -8,11 +8,11 @@ kernel.img: kernel.elf
 # 			dependencies
 kernel.elf: kernel_main.o \
 			boot.o shell.o string.o i2c.o \
-			serial.o printk.o act_led_init 
+			serial.o printk.o act_led_init.o 
 #			linker links
 		$(CROSS)ld $(LFLAGS) kernel_main.o 	
 			boot.o shell.o string.o i2c.o \
-			serial.o printk.o act_led_init \
+			serial.o printk.o act_led_init.o \
 			-Map kernel.map -o kernel.elf
 
 kernel_main.o: kernel_main.c
