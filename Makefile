@@ -25,19 +25,19 @@ boot.o: boot.s
 	$(CROSS)as $(ASFLAGS) -o boot.o boot.s
 
 string.o: string.c string.h
-	$(CROSS)$(CC) $(CFLAGS) -o string.o string.c
+	$(CROSS)$(CC) $(CFLAGS) -o string.o -c string.c
 
 serial.o: serial.c bcm2835_addr.h serial.h
-	$(CROSS)$(CC) $(CFLAGS) -o serial.o serial.c
+	$(CROSS)$(CC) $(CFLAGS) -o serial.o -c serial.c
 
 printk.o: printk.c printk.h
-	$(CROSS)$(CC) $(CFLAGS) -o printk.o printk.c
+	$(CROSS)$(CC) $(CFLAGS) -o printk.o -c printk.c
 
 i2c.o: i2c.c bcm2835_addr.h i2c.h
-	$(CROSS)$(CC) $(CFLAGS) -o i2c.o i2c.c
+	$(CROSS)$(CC) $(CFLAGS) -o i2c.o -c i2c.c
 
 act_led_init.o: act_led_init.c act_led_init.h
-	$(CROSS)$(CC) $(CFLAGS) -o act_led_init.o act_led_init.c
+	$(CROSS)$(CC) $(CFLAGS) -o act_led_init.o -c act_led_init.c
 
 
 kernel.dis:	kernel.elf
