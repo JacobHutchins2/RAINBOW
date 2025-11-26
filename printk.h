@@ -1,0 +1,1 @@
+int printk(char *string,...);

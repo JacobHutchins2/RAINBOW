@@ -1,11 +1,40 @@
 include Makefile.inc
 
-all:	kernel.img kernel.dis
+all:	kernel.img 
 
 kernel.img: kernel.elf
 	$(CROSS)objcopy kernel.elf -O binary kernel.img
 
+# 			dependencies
 kernel.elf: kernel_main.o \
+			boot.o shell.o string.o i2c.o \
+			serial.o printk.o act_led_init 
+#			linker links
+		$(CROSS)ld $(LFLAGS) kernel_main.o 	
+			boot.o shell.o string.o i2c.o \
+			serial.o printk.o act_led_init \
+			-Map kernel.map -o kernel.elf
 
 kernel_main.o: kernel_main.c
 	$(CROSS)$(CC) $(CFLAGS) -o kernel_main.o -c kernel_main.c
+
+shell.o: shell.c shell.h
+	$(CROSS)$(CC) $(CFLAGS) -o shell.o -c shell.c
+
+boot.o: boot.s
+	$(CROSS)as $(ASFLAGS) -o boot.o boot.s
+
+string.o: string.c string.h
+	$(CROSS)$(CC) $(CFLAGS) -o string.o string.c
+
+serial.o: serial.c bcm2835_addr.h serial.h
+	$(CROSS)$(CC) $(CFLAGS) -o serial.o serial.c
+
+printk.o: printk.c printk.h
+	$(CROSS)$(CC) $(CFLAGS) -o printk.o printk.c
+
+i2c.o: i2c.c bcm2835_addr.h i2c.h
+	$(CROSS)$(CC) $(CFLAGS) -o i2c.o i2c.c
+
+act_led_init.o: act_led_init.c act_led_init.h
+	$(CROSS)$(CC) $(CFLAGS) -o act_led_init.o act_led_init.c

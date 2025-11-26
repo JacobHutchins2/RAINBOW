@@ -8,6 +8,7 @@
 #include "delay.h"
 #include "i2c.h"
 #include "string.h"
+#include "shell_commands.h"
 
 uint32_t rainbow_shell(void) {
 
@@ -15,7 +16,7 @@ uint32_t rainbow_shell(void) {
 	char buffer[256];
 	int input_len = 0;
 	
-	/* Enter our "shell" */
+	/* Enter the "rainbow" */
 
 	while(1) {
 
