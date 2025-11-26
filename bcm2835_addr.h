@@ -90,6 +90,7 @@
 
 #define IRQ0_PENDING0		(IRQ_BASE+0x200)    // IRQ Pending 0
 #define IRQ0_PENDING1		(IRQ_BASE+0x204)    // IRQ Pending 1
+#define IRQ_DISABLE_BASIC_IRQ	(IRQ_BASE+0x224)
 
 #define IRQ0_SET_EN_0		(IRQ_BASE+0x210)    // IRQ Set Enable 0
 #define IRQ0_SET_EN_1		(IRQ_BASE+0x214)    // IRQ Set Enable 1
@@ -99,6 +100,8 @@
 
 #define IRQ0_STATUS0		(IRQ_BASE+0x230)    // IRQ Status 0
 #define IRQ0_STATUS1		(IRQ_BASE+0x234)    // IRQ Status 1
+
+#define IRQ_ENABLE_BASIC_IRQ_ARM_TIMER		(1<<0)
 
 /*==================================================================================*/
 
@@ -156,3 +159,20 @@
 #define UART0_ICR	(UART0_BASE + 0x44)
 
 /*===================================================================================*/
+
+/*======================================= TIMER ======================================*/
+// base address for timer
+#define TIMER_BASE  (0xb000)
+
+#define TIMER_LOAD  (TIMER_BASE + 0x400)     // load value to count
+#define TIMER_VALUE (TIMER_BASE + 0x404)     // currenttimer value
+
+#define TIMER_CONTROL   (TIMER_BASE + 0x408)    // access timer control values
+#define TIMER_CONTROL_ENABLE        (1<<7)      // enable counter
+#define TIMER_CONTROL_INT_ENABLE    (1<<5)      // timer interrupt enable
+#define TIMER_PRESCALE_256          (2<<2)      // counter scale
+#define TIMER_CONTROL_32BIT         (1<<1)      // timer size
+
+#define TIMER_IRQ_CLEAR (TIMER_BASE + 0x40c)    // timer interrupt clear
+#define TIMER_PREDIVIDER (TIMER_BASE + 0x41c)   // counter divider
+/*====================================================================================*/

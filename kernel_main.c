@@ -11,11 +11,14 @@
 
 // inlcude header of header files
 
+extern uint32_t io_base = 0x20000000;
+uint32_t act_led_gpio = 47;
+
 //The start of the end.
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t r2){
 
     // active LED start to show a heartbeat
-    heartbeat();
+    heartbeat_init();
 
     // Register base setup
     /* GPIO addresses setup in bcm2835_addr.c */

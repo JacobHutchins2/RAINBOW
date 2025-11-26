@@ -11,7 +11,7 @@
 int printk(char *string,...){
     va_list ap;
 
-    char buffer[MAX_PRINT_SIZE];
+    unsigned char buffer[MAX_PRINT_SIZE];
 	char int_buffer[10];
 	int int_pointer=0;
 
@@ -83,7 +83,7 @@ int printk(char *string,...){
 
 	va_end(ap);
 
-	uart_write(buffer,buffer_pointer);      // change to whatever display will be used
+	uart_write(buffer, buffer_pointer);      // change to whatever display will be used
 
 	return buffer_pointer;
 }

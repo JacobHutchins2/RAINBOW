@@ -1,3 +1,9 @@
+#define STDIN	0
+#define STDOUT	1
+#define STDERR	2
+#define SYSCALL_READ		3
+#define SYSCALL_WRITE		4
+
 static inline uint32_t syscall3(long sysnum, long a, long b, long c) {
 
 	register long _r0 asm("r0")=(long)(a);

@@ -37,7 +37,7 @@ unsigned char uart_getc(void){
     return bcm2835_read(UART0_DR);      // receiving data from uart
 }
 
-size_t uart_write(const unsigned char* buffer, size_t size){
+size_t uart_write(const unsigned char *buffer, size_t size){
     size_t i;
 
     for(i = 0; i < size; i++){
