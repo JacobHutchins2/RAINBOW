@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
-#include "bcm2835_periph.h"
+#include "bcm2835_addr.h"
 #include "mmio.h"
 #include "delay.h"
 #include "serial.h"
@@ -8,7 +8,7 @@
 void uart_init(void){
     uint32_t old;
     bcm2835_write(UART0_CR, 0x0);       // disable UART
-    old = bcm2835_read(GPIO_SEL1);
+    old = bcm2835_read(GPIO_FSEL1);
     old &= ~(0x7 << 12);
     old |= (4 << 12);
     old &= ~(0x7 << 15);
@@ -37,13 +37,13 @@ unsigned char uart_getc(void){
     return bcm2835_read(UART0_DR);      // receiving data from uart
 }
 
-size_t uart_write(cont unsigned char* buffer, size_t size){
+size_t uart_write(const unsigned char* buffer, size_t size){
     size_t i;
 
     for(i = 0; i < size; i++){
         uart_putc(buffer[1]);
         if(buffer[i] == '\n'){
-            uart_putc('\r')
+            uart_putc('\r');
         }
     }
     return i;

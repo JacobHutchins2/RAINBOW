@@ -1,9 +1,10 @@
 #include <stdint.h>
 
 #include "i2c.h"
-#include "bcm2835.h"
+#include "bcm2835_addr.h"
 #include "mmio.h"
 #include "printk.h"
+#include "delay.h"
 
 void i2c_init(void) {
     // Set to ALT0 for I2C1 
@@ -21,10 +22,10 @@ void i2c_init(void) {
 	old |= (4<<9);   // Set to ALT0 
 	bcm2835_write(GPIO_FSEL0, old);
 
-	bcm2835_write(GPIO_GPPUD, GPIO_PUD_PULLUP);	// Enable pull-up resistors
-	usleep(150);
+	bcm2835_write(GPIO_PUD, GPIO_PUD_PULLUP);	// Enable pull-up resistors
+	delay(150);
 	bcm2835_write(GPIO_PUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
-	usleep(150);
+	delay(150);
 	bcm2835_write(GPIO_PUD, GPIO_PUD_DISABLE);	// Remove the control signal
 	bcm2835_write(GPIO_PUDCLK0, 0);	     // Remove the clock
     
@@ -35,7 +36,7 @@ void i2c_init(void) {
     bcm2835_write(I2C_C, I2C_C_I2CEN); 
 
     printk("The program made it here!");        // debugging
-    return 0;
+    return;
 }
 
 int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
@@ -103,7 +104,7 @@ int i2c_scan(void) {
             if (status & I2C_S_DONE) {
                 // No error, device acknowledged
                 // ACK occurred if NO error bits are set
-                if (!(s & (I2C_S_ERR | I2C_S_CLKT))) {
+                if (!(status & (I2C_S_ERR | I2C_S_CLKT))) {
                     printk("Device found at 0x%02X\n", addr);
                 }
                 break;
