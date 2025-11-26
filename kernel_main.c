@@ -11,7 +11,7 @@
 // inlcude header of header files
 
 //The start of the end.
-void kernal_main(uint32_t r0, uint32_t r1, uint32_t r2){
+void kernel_main(uint32_t r0, uint32_t r1, uint32_t r2){
 
     // active LED start to show a heartbeat
     heartbeat();
