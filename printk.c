@@ -1,8 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include "mmio.h"
 #include "bcm2835_addr.h"
 #include "delay.h"
+#include "serial.h"
+
+#define MAX_PRINT_SIZE 256
 
 int printk(char *string,...){
     va_list ap;
