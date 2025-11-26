@@ -1,6 +1,6 @@
 include Makefile.inc
 
-all:	kernel.img 
+all:	kernel.img kernel.dis
 
 kernel.img: kernel.elf
 	$(CROSS)objcopy kernel.elf -O binary kernel.img
@@ -38,3 +38,11 @@ i2c.o: i2c.c bcm2835_addr.h i2c.h
 
 act_led_init.o: act_led_init.c act_led_init.h
 	$(CROSS)$(CC) $(CFLAGS) -o act_led_init.o act_led_init.c
+
+
+kernel.dis:	kernel.elf
+	$(CROSS)objdump --disassemble-all kernel.elf > kernel.dis
+
+
+clean:
+	rm -f *~ *.o *.map *.elf kernel.img *.dis
