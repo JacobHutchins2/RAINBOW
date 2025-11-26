@@ -5,12 +5,12 @@ all:	kernel.img kernel.dis
 kernel.img: kernel.elf
 	$(CROSS)objcopy kernel.elf -O binary kernel.img
 
-# 			dependencies
+# 			dependencies then
+#			linker links
 kernel.elf: kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o 
-#			linker links
-		$(CROSS)ld $(LFLAGS) kernel_main.o 	
+	$(CROSS)ld $(LFLAGS) kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
 			-Map kernel.map -o kernel.elf

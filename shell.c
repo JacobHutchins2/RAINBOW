@@ -2,13 +2,14 @@
 #include <stdint.h>
 
 #include "shell.h"
-#include "uart.h"
+#include "serial.h"
 #include "mmio.h"
 #include "bcm2835_addr.h"
 #include "delay.h"
 #include "i2c.h"
 #include "string.h"
 #include "shell_commands.h"
+#include "printk.h"
 
 uint32_t rainbow_shell(void) {
 
@@ -20,7 +21,7 @@ uint32_t rainbow_shell(void) {
 
 	while(1) {
 
-		printf("--> ");	/* print a prompt character */
+		printk("--> ");	/* print a prompt character */
 
 		while(1) {
 			ch=getchar();

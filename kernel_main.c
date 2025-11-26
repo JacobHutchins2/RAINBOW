@@ -7,6 +7,7 @@
 #include "act_led_init.h"
 #include "serial.h"
 #include "i2c.h"
+#include "shell.h"
 
 // inlcude header of header files
 
