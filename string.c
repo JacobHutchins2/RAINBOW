@@ -6,6 +6,7 @@
 #include "string.h"
 #include "i2c.h"
 #include "printk.h"
+#include "shell_commands.h"
 
 #define ESC "\033"			// ANSI Escape character
 
@@ -23,7 +24,7 @@ int compare(char *s1, char *s2) {
 }
 /*============================================================================*/
 
-static int parse_input(char *string) {
+int parse_input(char *string) {
 
 	if (compare(string,"help")) {		//help command
 		printk("\nSupported commands:\n");
