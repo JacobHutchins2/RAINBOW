@@ -3,6 +3,8 @@
 #define STDERR	2
 #define SYSCALL_READ		3
 #define SYSCALL_WRITE		4
+#define SYSCALL_TIME		13
+#define SYSCALL_BLINK		8192
 
 static inline uint32_t syscall3(long sysnum, long a, long b, long c) {
 
