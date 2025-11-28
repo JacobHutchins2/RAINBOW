@@ -6,12 +6,12 @@
 // global counter
 uint32_t tick_counter = 0;
 
-int timer_intit(void);{
+int timer_init(void){
     uint32_t old;
 
     // disable clock for configuration
     old = bcm2835_read(TIMER_CONTROL);
-    old& =~ (TIMER_CONTROL_ENABLE | TIMER_CONTROL_INT_ENABLE);
+    old &= ~(TIMER_CONTROL_ENABLE | TIMER_CONTROL_INT_ENABLE);
 
     bcm2835_write(TIMER_PREDIVIDER, 0xf9);      // divide to 1MHz
 

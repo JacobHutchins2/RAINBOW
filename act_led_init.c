@@ -25,12 +25,13 @@ int act_on(void){
     uint32_t *gpio = (uint32_t *)GPIO_BASE;       // Points to GPIO base address
     gpio[GPIO_SET1] = (1 << (45 - 32)); // Set GPIO45 high
     //delay(0x2200000);                  // Delay
-
+    return 0;
 }
 
 int act_off(void){
     uint32_t *gpio = (uint32_t *)GPIO_BASE;       // Points to GPIO base address
     gpio[GPIO_CLR1] = (1 << (45 - 32)); // Set GPIO45 low
     //delay(0x2200000);                  // Delay
+    return 0;
 }
 

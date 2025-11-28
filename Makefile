@@ -10,11 +10,13 @@ kernel.img: kernel.elf
 kernel.elf: kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
-			shell_commands.o interrupts.o timer.o
+			shell_commands.o interrupts.o timer.o \
+			syscalls.o display_io.o
 	$(CROSS)ld $(LFLAGS) kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
 			shell_commands.o interrupts.o timer.o \
+			syscalls.o display_io.o \
 			-Map kernel.map -o kernel.elf
 
 kernel_main.o: kernel_main.c
@@ -49,6 +51,12 @@ timer.o: timer.c bcm2835_addr.h timer.h
 
 interrupts.o: interrupts.c bcm2835_addr.h interrupts.h
 	$(CROSS)$(CC) $(CFLAGS) -o interrupts.o -c interrupts.c
+
+syscalls.o: syscalls.c syscalls.h
+	$(CROSS)$(CC) $(CFLAGS) -o syscalls.o -c syscalls.c
+
+display_io.o: display_io.c display_io.h
+	$(CROSS)$(CC) $(CFLAGS) -o display_io.o -c display_io.c
 
 kernel.dis:	kernel.elf
 	$(CROSS)objdump --disassemble-all kernel.elf > kernel.dis

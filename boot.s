@@ -64,60 +64,6 @@ fast_interrupt_addr:		.word	fiq_handler
 	/* Continue with boot code */
 reset:
 
-.if 0
-
-/* Pi2/Pi3 only!!! */
-	/* Get current CPUID */
-	/* From the Multiprocessor Affinity Register (MPIDR) */
-
-	/* Note, the desciprtion of MPIDR in the ARMv7 ARM does not match */
-	/* well with the actual usage, which is better described in the */
-	/* ARM Cortex-A7 manuals */
-
-	mrc	p15, 0, r3, c0, c0, 5
-	ands	r3, #3			/* CPU ID is Bits 0..1 */
-	bne	wait_forever		/* If not CPU zero, go to sleep */
-					/* In theory recent firmware already */
-					/* Did this for us */
-
-	cpsid	if			/* Disable IRQ/FIR interrupts */
-					/* The cpsid instruction is a */
-					/* shortcut to setting those  */
-					/* bits in the CPSR */
-
-	/* Check for hypervisor mode */
-	/* As the firmware stub will put pi2/pi3 into HYP mode */
-
-	mrs	r3, cpsr		/* put cpsr in r3 */
-	and	r4, r3, #0x1F		/* mask off all but mode */
-	cmp	r4, #0x1A		/* check for HYP (0x1A) */
-	bne	done_hyp		/* skip ahead if not in HYP mode */
-
-	/* If we're here, we are in HYP mode */
-	bic	r3, r3, #0x1F		/* clear the mode bits */
-					/* Setup SVC mode, IRQs disabled */
-	orr	r3, #CPSR_MODE_SVC | CPSR_MODE_IRQ_DISABLE | CPSR_MODE_FIQ_DISABLE
-					/* mask Abort bit */
-					/* Separate as it's an invalid constant */
-					/* If we try to include with above */
-	orr	r3, #CPSR_MODE_ABORT_DISABLE
-
-	adr	lr, done_pi2		/* load address we want to return to */
-	msr	spsr_cxsf, r3		/* update spsr, cxsf = everything */
-	msr	ELR_hyp, lr		/* Special return address when in */
-					/* hypervisor mode */
-	eret				/* Special return-from hypervisor */
-					/* instruction */
-done_hyp:
-					/* Make sure we are in SVC mode */
-	orr	r3, r3, #CPSR_MODE_SVC | CPSR_MODE_IRQ_DISABLE | CPSR_MODE_FIQ_DISABLE
-	msr	cpsr_c, r3		/* set the control (mode) bits */
-done_pi2:
-
-/* End Pi2/Pi3 only!!! */
-
-.endif
-
 	/* Set up the Supervisor Mode Stack	*/
 	/* Put it right before the entry point	*/
 	/* (it grows down)			*/

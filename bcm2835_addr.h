@@ -84,7 +84,7 @@
 #define IRQ_BASIC_PENDING_IRQ    (1 << 19)       // IRQ interrupt
 
 #define IRQ_ENABLE_IRQ1    (IRQ_BASE + 0x210) // Enable IRQs 1-31
-#define IRQ_ENABLE_BASIC   (IRQ_BASE + 0x218) // Enable Basic IRQs
+#define IRQ_ENABLE_BASIC_IRQ   (IRQ_BASE + 0x218) // Enable Basic IRQs
 #define IRQ_DISABLE_IRQ1   (IRQ_BASE + 0x21C) // Disable IRQs 1-31
 #define IRQ_DISABLE_BASIC  (IRQ_BASE + 0x224) // Disable Basic IRQs
 
@@ -170,7 +170,7 @@
 #define TIMER_CONTROL   (TIMER_BASE + 0x408)    // access timer control values
 #define TIMER_CONTROL_ENABLE        (1<<7)      // enable counter
 #define TIMER_CONTROL_INT_ENABLE    (1<<5)      // timer interrupt enable
-#define TIMER_PRESCALE_256          (2<<2)      // counter scale
+#define TIMER_CONTROL_PRESCALE_256          (2<<2)      // counter scale
 #define TIMER_CONTROL_32BIT         (1<<1)      // timer size
 
 #define TIMER_IRQ_CLEAR (TIMER_BASE + 0x40c)    // timer interrupt clear

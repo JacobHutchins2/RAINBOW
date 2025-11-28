@@ -48,3 +48,18 @@ size_t uart_write(const unsigned char *buffer, size_t size){
     }
     return i;
 }
+
+int32_t uart_getc_noblock(void) {
+
+	/* Check Flags Register */
+
+	/* Return 0 if Receive FIFO is empty */
+	if ( bcm2835_read(UART0_FR) & UART0_FR_RXFE ) {
+		return 0;
+	}
+
+	/* Read and return the received data */
+	/* Note we are ignoring the top 4 error bits */
+
+	return (bcm2835_read(UART0_DR))&0xff;
+}
