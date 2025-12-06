@@ -10,23 +10,24 @@
 #include "shell.h"
 #include "interrupts.h"
 #include "timer.h"
-
+#include "printk.h"
 // inlcude header of header files
 
 uint32_t io_base = 0x20000000;
 uint32_t act_led_gpio = 47;
 
 //The start of the end.
-void kernel_main(uint32_t r0, uint32_t r1, uint32_t r2){
-
-    // active LED start to show a heartbeat
-    heartbeat_init();
-
-    // Register base setup
-    /* GPIO addresses setup in bcm2835_addr.c */
+void kernel_main(){
 
     // hardware initialization / interrupts
     uart_init();
+    printk("UART initialized.\n");
+    // active LED start to show a heartbeat
+    heartbeat_init();
+    
+    // Register base setup
+    /* GPIO addresses setup in bcm2835_addr.c */
+
     // timer setup
     timer_init();
     //spi_init();

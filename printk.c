@@ -5,6 +5,8 @@
 #include "bcm2835_addr.h"
 #include "delay.h"
 #include "serial.h"
+#include "printk.h"
+#include "display_io.h"
 
 #define MAX_PRINT_SIZE 256
 
@@ -83,7 +85,7 @@ int printk(char *string,...){
 
 	va_end(ap);
 
-	uart_write(buffer, buffer_pointer);      // change to whatever display will be used
+	serial_write(buffer, buffer_pointer);      // change to whatever display will be used
 
 	return buffer_pointer;
 }

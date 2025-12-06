@@ -58,9 +58,6 @@ syscalls.o: syscalls.c syscalls.h
 display_io.o: display_io.c display_io.h
 	$(CROSS)$(CC) $(CFLAGS) -o display_io.o -c display_io.c
 
-kernel.dis:	kernel.elf
-	$(CROSS)objdump --disassemble-all kernel.elf > kernel.dis
-
 
 clean:
 	rm -f *~ *.o *.map *.elf kernel.img *.dis
