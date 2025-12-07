@@ -29,6 +29,7 @@ int parse_input(char *string) {
 	if (compare(string,"help")) {		//help command
 		printk("\nSupported commands:\n");
 		printk("clear: clears the screen\n");
+		printk("scan: runs an i2cdetect\n");
 		putchar('\r');
 		putchar('\n');   // line feed
 	}
@@ -39,7 +40,7 @@ int parse_input(char *string) {
 		putchar('\n');   // line feed
 	}
 
-    if(compare(string, "i2c_scan")){
+    if(compare(string, "scan")){
         i2c_scan();     // looking at connected devices
         putchar('\r');
 		putchar('\n');   // line feed

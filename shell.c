@@ -21,10 +21,10 @@ uint32_t rainbow_shell(void) {
 
 	while(1) {
 
-		printk("--> ");	/* print a prompt character */
+		printk("--> ");	// printing shell prompt
 
 		while(1) {
-			ch=getchar();
+			ch = getchar();
 
 			/* handle Enter being pressed */
 			if (ch=='\n' || ch=='\r') {

@@ -31,12 +31,7 @@ void heartbeat_init(){
         delay(0x2200000);                  // Delay
     }
 */
-    for(int i = 0; i < 10; i++){
-        act_on();
-        delay(0x800000);
-        act_off();
-        delay(0x200000);
-    }
+    
 }
 
 

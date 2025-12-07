@@ -49,7 +49,7 @@
 
 // BCM2835 peripherals Pg28
 // base for I2C peripheral BSC1
-#define I2C_BASE	(0x7e804000)
+#define I2C_BASE	(0x804000)
 
 #define I2C_C		(I2C_BASE + 0x00)  // Control
 #define I2C_S		(I2C_BASE + 0x04)  // Status
@@ -60,11 +60,13 @@
 #define I2C_DEL		(I2C_BASE + 0x18)  // Data Delay
 #define I2C_CLKT	(I2C_BASE + 0x1c)  // Clock Stretch Timeout
 
+// control register
 #define I2C_C_I2CEN		(1 << 15) // I2C Enable
 #define I2C_C_ST		(1 << 7)  // Start Transfer
-#define I2C_C_CLEAR		(1 << 4)  // Clear FIFO
+#define I2C_C_CLEAR		((1 << 5) | (1 << 4))  // Clear FIFO
 #define I2C_C_READ		(1 << 0)  // Read Transfer
 
+// status register
 #define I2C_S_TA		(1 << 0)  // Transfer Active
 #define I2C_S_DONE		(1 << 1)  // Transfer Done
 #define I2C_S_TXW		(1 << 2)  // TX FIFO needs writing
