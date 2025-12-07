@@ -16,7 +16,7 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
     pending = bcm2835_read(IRQ_BASIC_PENDING);
 
     if(pending & IRQ_BASIC_PENDING_TIMER){
-        bcm2835_write(TIMER_IRQ_CLEAR, 0x1);
+        bcm2835_write(TIMER_IRQ_CLEAR, 0x0);
     
         if(blink_en){
             if(lit){        // ACT blink on
@@ -28,44 +28,11 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
                 lit = 1;
             }
         }
-        tick_counter++;     // increment timer
+        //tick_counter++;     // increment timer
     }
     else{
         printk("Unkown interrupt %x\n", pending);
     }
 }
 
-void __attribute__((interrupt("UNDEF"))) undefined_handler(void) {
 
-	printk("Undefined instruction!\n");
-	while(1);
-
-}
-
-void __attribute__((interrupt("ABORT"))) prefetch_handler(void) {
-
-	printk("Unexpected prefetch handler interrupt!\n");
-	while(1);
-
-}
-
-void __attribute__((interrupt("ABORT"))) data_handler(void) {
-
-	printk("Unexpected data handler interrupt!\n");
-	while(1);
-
-}
-
-void __attribute__((interrupt("FIQ"))) fiq_handler(void) {
-
-	printk("Unexpected FIQ interrupt!\n");
-	while(1);
-
-}
-
-void __attribute__((interrupt("SVC"))) reset_error(void) {
-
-	printk("Reset triggered!\n");
-	while(1);
-
-}

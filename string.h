@@ -1,1 +1,1 @@
-int parse_input(char *string);
+void parse_input(char *string);

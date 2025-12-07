@@ -24,18 +24,20 @@ void kernel_main(){
     printk("UART initialized.\n");
     // active LED start to show a heartbeat
     heartbeat_init();
-    
+    printk("Heartbeat started.\n");
     // Register base setup
     /* GPIO addresses setup in bcm2835_addr.c */
 
     // timer setup
     timer_init();
+    printk("Timer Initialized.\n");
     //spi_init();
     enable_interrupts();
+    printk("Interrupts Enabled.\n");
 
     // sensor initialization / control
     i2c_init();
-
+    printk("i2c Initialized.\n");
     // data processing
     //moisture_data();
 
@@ -47,7 +49,7 @@ void kernel_main(){
 
     // enter shell/testing environment
     rainbow_shell();
-
+    printk("Why am I here?\n");
     while(1){
 
     }

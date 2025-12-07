@@ -70,11 +70,6 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 			printk("Unknown syscall %d\n",r7);
 			break;
 	}
-	#if 0
-	asm volatile("str %[result],[sp,#0]\n"
-		:	/* output */
-		:       [result] "r" (result) /* input */
-		:);	/* clobber */
-	#endif
+	
     return result;
 }

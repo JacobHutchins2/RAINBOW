@@ -8,7 +8,7 @@
 #include "delay.h"
 #include "i2c.h"
 #include "string.h"
-#include "shell_commands.h"
+//#include "shell_commands.h"
 #include "printk.h"
 
 uint32_t rainbow_shell(void) {
@@ -19,12 +19,13 @@ uint32_t rainbow_shell(void) {
 	
 	/* Enter the "rainbow" */
 
-	while(1) {
+	while(1){
 
 		printk("--> ");	// printing shell prompt
-
-		while(1) {
-			ch = getchar();
+		//printk("I am here.\n");		//debuggging
+		while(1){
+			//printk("And now I am here.\n");		//debugging
+			ch = uart_getc();
 
 			/* handle Enter being pressed */
 			if (ch=='\n' || ch=='\r') {
@@ -38,11 +39,12 @@ uint32_t rainbow_shell(void) {
 			}
 
 			else{
-				putchar(ch);
+				uart_putc(ch);
 				if (input_len < (int)(sizeof(buffer) - 1)) {		// Save to buffer if space remains
 					buffer[input_len++] = ch;						// otherwise ignore excess characters
 				}
 			}
 		}
 	}
+	printk("Hey! You shouldn't be here!\n");
 }

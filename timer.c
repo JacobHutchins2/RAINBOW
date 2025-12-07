@@ -15,7 +15,7 @@ int timer_init(void){
 
     bcm2835_write(TIMER_PREDIVIDER, 0xf9);      // divide to 1MHz
 
-    bcm2835_write(TIMER_LOAD, 3904);        // load counter for around 1Hz
+    bcm2835_write(TIMER_LOAD, 3906);        // load counter for around 1Hz
 
     // timer in 32 bit mode
     bcm2835_write(TIMER_CONTROL, TIMER_CONTROL_32BIT | TIMER_CONTROL_ENABLE | TIMER_CONTROL_INT_ENABLE | TIMER_CONTROL_PRESCALE_256);
