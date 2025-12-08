@@ -1,6 +1,6 @@
 include Makefile.inc
 
-all:	kernel.img kernel.dis
+all:	kernel.img 
 
 kernel.img: kernel.elf
 	$(CROSS)objcopy kernel.elf -O binary kernel.img
