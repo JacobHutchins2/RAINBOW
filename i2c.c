@@ -12,14 +12,14 @@ void i2c_init(void) {
 
 	// GPIO 2 
 	old = bcm2835_read(GPIO_FSEL0);
-	old &= ~(7<<6);  // Clear bits 8-6 
-	old |= (4<<6);   // Set to ALT0 
+	old &= ~(7 <<6 );  // Clear bits 8-6 
+	old |= (4 << 6);   // Set to ALT0 
 	bcm2835_write(GPIO_FSEL0, old);
 
 	// GPIO 3 
 	old = bcm2835_read(GPIO_FSEL0);
-	old &= ~(7<<9);  // Clear bits 11-9 
-	old |= (4<<9);   // Set to ALT0 
+	old &= ~(7 << 9);  // Clear bits 11-9 
+	old |= (4 << 9);   // Set to ALT0 
 	bcm2835_write(GPIO_FSEL0, old);
 
 	bcm2835_write(GPIO_PUD, GPIO_PUD_PULLUP);	// Enable pull-up resistors
@@ -40,7 +40,7 @@ void i2c_init(void) {
 }
 
 int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
-    
+    printk("Begginning of i2c_write\n");        // debugging
     bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
     bcm2835_write(I2C_A, addr); // Set slave address
     bcm2835_write(I2C_DLEN, len); // Set data length
@@ -61,19 +61,25 @@ int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
             return -1; // Error occurred
         }
     }
+    printk("End of i2c_write\n");        // debugging
     return 0;
 }
 
 int i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
-    
+    printk("Begginning of i2c_read\n");        // debugging
     bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
     bcm2835_write(I2C_A, addr); // Set slave address
     bcm2835_write(I2C_DLEN, len); // Set data length
-    bcm2835_write(I2C_C, I2C_C_CLEAR | I2C_C_READ); // Clear FIFO and set to read mode
+    //bcm2835_write(I2C_C, I2C_C_CLEAR | I2C_C_READ); // Clear FIFO and set to read mode
 
-    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
+    //bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
+    bcm2835_write(I2C_C, I2C_C_CLEAR);   // Clear FIFO first
+    // Start repeated-start READ
+    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST | I2C_C_READ);
+
     uint32_t index = 0;
     while (1) {
+        //printk("Am I stuck here forever?\n"); //yes you are
         uint32_t status = bcm2835_read(I2C_S);
         while ((status & I2C_S_RXR) && (index < len)) {
             data[index++] = bcm2835_read(I2C_FIFO); // Read from FIFO
@@ -86,6 +92,7 @@ int i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
             return -1; // Error occurred
         }
     }
+    printk("End of i2c_read\n");        // debugging
     return 0;
 }
 

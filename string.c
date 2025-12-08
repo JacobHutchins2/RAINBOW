@@ -31,6 +31,7 @@ void parse_input(char *string) {
 		printk("\nSupported commands:\n");
 		printk("clear: clears the screen\n");
 		printk("scan: runs an i2cdetect\n");
+		printk("read: reads moisture sensor value\n");
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}
@@ -43,6 +44,41 @@ void parse_input(char *string) {
 
     if(compare(string, "scan")){
         i2c_scan();     // looking at connected devices
+        uart_putc('\r');
+		uart_putc('\n');   // line feed
+    }
+
+	if(compare(string, "read")){
+		printk("\n");
+		uint8_t reg = 0x0F;
+		if(i2c_write(0x36, &reg, 1) == -1){   // Point to moisture register
+			printk("Error writing to moisture sensor.\n");
+			uart_putc('\r');
+		    uart_putc('\n');   // line feed
+			return;
+		}
+		//delay(2000);
+        uint8_t buf[2];
+		if(i2c_read(0x36, buf, 2) == -1){
+			printk("Error reading from moisture sensor.\n");
+			uart_putc('\r');
+		    uart_putc('\n');   // line feed
+			return;
+		}
+
+		uint16_t moisture = (buf[0] << 8) | buf[1];
+		printk("\nMoisture reading: %u\n", moisture);
+
+        uart_putc('\r');
+		uart_putc('\n');   // line feed
+    }
+
+	if(compare(string, "test")){
+		printk("\n");
+        uint8_t reg = 0x00;
+		int r = i2c_write(0x36, &reg, 1);
+		printk("i2c_write returned %d\n", r);
+
         uart_putc('\r');
 		uart_putc('\n');   // line feed
     }
