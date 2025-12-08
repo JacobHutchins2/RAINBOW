@@ -16,6 +16,7 @@
 uint32_t io_base = 0x20000000;
 uint32_t act_led_gpio = 47;
 
+
 //The start of the end.
 void kernel_main(){
 
@@ -40,6 +41,12 @@ void kernel_main(){
     printk("i2c Initialized.\n");
     // data processing
     //moisture_data();
+    // Add this at system initialization, before any 'read' commands
+    
+
+    uint8_t reset_cmd[2] = { 0x00, 0xFF};
+    i2c_write(0x36, reset_cmd, 2);        //reset sensor
+    delay(0x220000);
 
     // display data
     //moisture_display();
