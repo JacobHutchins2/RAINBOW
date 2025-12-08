@@ -105,11 +105,11 @@ void parse_input(char *string) {
         uint8_t reg = 0x00;
 		int r = i2c_write(0x36, &reg, 1);
 		printk("i2c_write returned %d\n", r);
-
+/*
 		uint8_t dummy = 0;
 		int rv = i2c_write(0x36, &dummy, 1);
-
-		if (rv == -1)
+*/
+		if (r == -1)
 			printk("0x36 NACK\n");
 		else
 			printk("0x36 ACK\n");

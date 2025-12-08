@@ -114,17 +114,43 @@ uint8_t reg = 0x00;
 */
 
 int i2c_scan(void) {
-    printk("Start scan.\n");
+    /*printk("Start scan.\n");
     for (uint8_t addr = 0x30; addr <= 0x77; addr++) {
         int device_addr = i2c_write(addr, 0x0, 1);       // attempting to write to device
         delay(1500);
         if(device_addr == -1){
-            continue;
+            printk("address: %x ---\n", addr);
         }
         else{
             printk("address: %x ACK\n", addr);
         }
         printk("The program is ending.\n");
+    }
+    return 0;*/
+    for (uint8_t addr = 0x03; addr <= 0x77; addr++) {
+        //bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
+        bcm2835_write(I2C_C, I2C_C_CLEAR);      // clearing FIFO
+        bcm2835_write(I2C_A, addr); // Set slave address
+        bcm2835_write(I2C_DLEN, 1); // data to send
+        bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); //
+        bcm2835_write(I2C_FIFO, 0); // Dummy data
+
+        bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
+        while (1) {
+            uint32_t status = bcm2835_read(I2C_S);
+            if (status & I2C_S_DONE) {
+                // No error, device acknowledged
+                // ACK occurred if NO error bits are set
+                if (!(status & (I2C_S_ERR | I2C_S_CLKT))) {
+                    printk("Device found at 0x%02X\n", addr);
+                }
+                break;
+            }
+            if (status & (I2C_S_ERR | I2C_S_CLKT)) {
+                // Error occurred, no device at this address
+                break;
+            }
+        }
     }
     return 0;
 }
