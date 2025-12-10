@@ -31,10 +31,10 @@ void i2c_init(void) {
 	bcm2835_write(GPIO_FSEL0, temp_reg);
 
     delay(150);
-	bcm2835_write(GPIO_GPPUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
+	bcm2835_write(GPIO_PUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
 	delay(150);
-	bcm2835_write(GPIO_GPPUD, GPIO_GPPUD_DISABLE);	// Disable PUD
-	bcm2835_write(GPIO_GPPUDCLK0, 0);	     // Reset the clock
+	bcm2835_write(GPIO_PUD, GPIO_PUD_DISABLE);	// Disable PUD
+	bcm2835_write(GPIO_PUDCLK0, 0);	     // Reset the clock
 
     // Set I2C clock divider for 100kHz (700MHz clock)
     bcm2835_write(I2C_DIV, 7000);
@@ -94,7 +94,7 @@ int i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
             delay(150);
 		    //k++;
         }
-        data[i] = bcm2835_read(I2C_FIFO) & 0xff;
+        data[index] = bcm2835_read(I2C_FIFO) & 0xff;
         //printk("        read 0x%x\n", data[i]);     // debugging
     }
     //printk("End of i2c_read\n");        // debugging
@@ -144,6 +144,13 @@ int i2c_scan(void) {
     return 0;
 }
 
+// shows registers needed for the sensor
+// https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/faq? 
+//   SENSOR_TOUCH_BASE    0x0F
+//   SENSOR_TOUCH_FUNCTION 0x10
+//   SENSOR_STATUS_BASE   0x00
+//   SENSOR_STATUS_TEMP   0x04
+
 // fucntion that will take command registers and run them through read/writes
 static int i2c_write_read(uint8_t base, uint8_t func, uint8_t *buf, uint32_t len) {
     uint8_t cmd[2] = { base, func };
@@ -166,7 +173,7 @@ static uint16_t sensor_moisture(void) {
 // Sends command registers for getting temp
 static uint32_t sensor_temperature(void) {
     uint8_t buf[4];
-    if (seesaw_read(SENSOR_STATUS_BASE, SENSOR_STATUS_TEMP, buf, 4) < 0)
+    if (i2c_write_read(SENSOR_STATUS_BASE, SENSOR_STATUS_TEMP, buf, 4) < 0)
         return 0;
 
     uint32_t raw = ((uint32_t)buf[0] << 24) |

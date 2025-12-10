@@ -86,16 +86,13 @@ void parse_input(char *string) {
 	// command to read moisture
 	if(compare(string, "sense")){
 		printk("\n");
-		uint8_t cmd[2] = { 0x0F, 0x10 };
-		uint8_t buf[2];
-		if(i2c_write_read(DEVICE_ADDRESS, cmd, 2, buf, 2) == -1) {
-        	printk("Error in combined I2C transfer.\n");
-        	return;
-    	}
+		//uint8_t cmd[2] = { 0x0F, 0x10 };
+		//uint8_t buf[2];
+		get_sensor_data();
 
-		uint16_t moisture = (buf[0] << 8) | buf[1];
+		//uint16_t moisture = (buf[0] << 8) | buf[1];
     
-    	printk("\nMoisture reading: %u\n", moisture);
+    	//printk("\nMoisture reading: %u\n", moisture);
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}
