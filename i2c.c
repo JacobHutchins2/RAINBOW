@@ -6,112 +6,101 @@
 #include "printk.h"
 #include "delay.h"
 
+// Sensor function registers
+#define SENSOR_ADDR 0x36
+#define SENSOR_TOUCH_BASE    0x0F
+#define SENSOR_TOUCH_FUNCTION 0x10
+#define SENSOR_STATUS_BASE   0x00
+#define SENSOR_STATUS_TEMP   0x04
+
 void i2c_init(void) {
     // Set to ALT0 for I2C1 
-	uint32_t old;
+	uint32_t temp_reg;
 
+    bcm2835_write(I2C_C, 0);               // reset i2c control regs
 	// GPIO 2 
-	old = bcm2835_read(GPIO_FSEL0);
-	old &= ~(7 <<6 );  // Clear bits 8-6 
-	old |= (4 << 6);   // Set to ALT0 
-	bcm2835_write(GPIO_FSEL0, old);
+	temp_reg = bcm2835_read(GPIO_FSEL0);
+	temp_reg &= ~(7 <<6 );  // Clear bits 8-6 
+	temp_reg |= (4 << 6);   // Set to ALT0 
+	bcm2835_write(GPIO_FSEL0, temp_reg);
 
 	// GPIO 3 
-	old = bcm2835_read(GPIO_FSEL0);
-	old &= ~(7 << 9);  // Clear bits 11-9 
-	old |= (4 << 9);   // Set to ALT0 
-	bcm2835_write(GPIO_FSEL0, old);
+	temp_reg = bcm2835_read(GPIO_FSEL0);
+	temp_reg &= ~(7 << 9);  // Clear bits 11-9 
+	temp_reg |= (4 << 9);   // Set to ALT0 
+	bcm2835_write(GPIO_FSEL0, temp_reg);
 
-	bcm2835_write(GPIO_PUD, GPIO_PUD_PULLUP);	// Enable pull-up resistors
+    delay(150);
+	bcm2835_write(GPIO_GPPUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
 	delay(150);
-	bcm2835_write(GPIO_PUDCLK0, (1<<2)|(1<<3));	// Clock the control signal into GPIO 2 and 3
-	delay(150);
-	bcm2835_write(GPIO_PUD, GPIO_PUD_DISABLE);	// Remove the control signal
-	bcm2835_write(GPIO_PUDCLK0, 0);	     // Remove the clock
-    
-    // Set I2C clock divider for 100kHz (250MHz clock)
-    bcm2835_write(I2C_DIV, 2500);
-    // Enable I2C
-    bcm2835_write(I2C_C, I2C_C_CLEAR); // Clear FIFO
-    bcm2835_write(I2C_C, I2C_C_I2CEN); 
+	bcm2835_write(GPIO_GPPUD, GPIO_GPPUD_DISABLE);	// Disable PUD
+	bcm2835_write(GPIO_GPPUDCLK0, 0);	     // Reset the clock
 
-    printk("The program made it here!\n");        // debugging
+    // Set I2C clock divider for 100kHz (700MHz clock)
+    bcm2835_write(I2C_DIV, 7000);
+
+    //printk("The program made it here!\n");        // debugging
     return;
 }
 
 int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len) {
-    printk("Begginning of i2c_write\n");        // debugging
+    //printk("Begginning of i2c_write\n");        // debugging
     bcm2835_write(I2C_A, addr); // Set slave address
-    delay(150);
     bcm2835_write(I2C_C, I2C_C_CLEAR); // Clear FIFO
     bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
-    
     bcm2835_write(I2C_DLEN, len); // Set data length
-    
+    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
 
     // Write to FIFO
     for (int i = 0; i < len; i++) {
-        bcm2835_write(I2C_FIFO, data[i]);
-    }
-
-    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
-    while (1) {
-        uint32_t status = bcm2835_read(I2C_S);
-        if (status & I2C_S_DONE) {
-            break; // Transfer complete
+        while((bcm2835_read(I2C_S)&I2C_S_TXD)==0) {     // waiting for status and transfer
+                asm("");        // avoid optimization
         }
-        if (status & (I2C_S_ERR | I2C_S_CLKT)) {
-            return -1; // Error occurred
-        }
+        bcm2835_write(I2C_FIFO, data[i]);       // writing 
     }
-    printk("End of i2c_write\n");        // debugging
+    while ((bcm2835_read(I2C_S)&I2C_S_DONE) ==0) {  // waiting for status and DONE
+                asm("");        // avoid optimization
+    }
+    
+    //printk("End of i2c_write\n");        // debugging
     return 0;
 }
 
 int i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
-    printk("Begginning of i2c_read\n");        // debugging
-    bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
-    bcm2835_write(I2C_A, addr); // Set slave address
-    bcm2835_write(I2C_DLEN, len); // Set data length
-    //bcm2835_write(I2C_C, I2C_C_CLEAR | I2C_C_READ); // Clear FIFO and set to read mode
+    //printk("Begginning of i2c_read\n");        // debugging
+    //printk("i2c reading 0x%x length %d\n", addr, len);
 
-    //bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer
-    bcm2835_write(I2C_C, I2C_C_CLEAR);   // Clear FIFO first
-    // Start repeated-start READ
-    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST | I2C_C_READ);
+    bcm2835_write(I2C_A, addr); // Set slave address
+    bcm2835_write(I2C_C, I2C_C_CLEAR); // clear fifo
+    bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
+    bcm2835_write(I2C_DLEN, len); // Set data length
+    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST | I2C_C_READ); // Start transfer
 
     uint32_t index = 0;
-    while (1) {
+    while((bcm2835_read(I2C_S) & I2C_S_DONE) == 0) {        // wait for status and DONE
         //printk("Am I stuck here forever?\n"); //yes you are
-        uint32_t status = bcm2835_read(I2C_S);
-        while ((status & I2C_S_RXR) && (index < len)) {
-            data[index++] = bcm2835_read(I2C_FIFO); // Read from FIFO
-            status = bcm2835_read(I2C_S);
-        }
-        if (status & I2C_S_DONE) {
-            break; // Transfer complete
-        }
-        if (status & (I2C_S_ERR | I2C_S_CLKT)) {
-            return -1; // Error occurred
+        asm("");        // avoid optimization
+
+        index++;
+        if (index == 0x220000) {
+            printk("i2c read timeout1\n");      //debugging
+            break;
         }
     }
-    printk("End of i2c_read\n");        // debugging
+
+    for(index = 0; index < len; index++){
+        //int k = 0;
+        while((bcm2835_read(I2C_S & I2C_S_RXD)) == 0) {     // wait for satus and received
+            delay(150);
+		    //k++;
+        }
+        data[i] = bcm2835_read(I2C_FIFO) & 0xff;
+        //printk("        read 0x%x\n", data[i]);     // debugging
+    }
+    //printk("End of i2c_read\n");        // debugging
     return 0;
 }
 
-/*
-uint8_t reg = 0x00;
-		int r = i2c_write(0x36, &reg, 1);
-		printk("i2c_write returned %d\n", r);
-
-		uint8_t dummy = 0;
-		int rv = i2c_write(0x36, &dummy, 1);
-
-		if (rv == -1)
-			printk("0x36 NACK\n");
-		else
-			printk("0x36 ACK\n");
-*/
 
 int i2c_scan(void) {
     /*printk("Start scan.\n");
@@ -155,66 +144,50 @@ int i2c_scan(void) {
     return 0;
 }
 
-int i2c_write_read(uint8_t addr, const uint8_t *write_data, uint32_t write_len, uint8_t *read_data, uint32_t read_len) {
-    printk("Beginning of i2c_write_read_combined\n");
-    bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
-    bcm2835_write(I2C_A, addr); // Set slave address
-
-    //  Write 
-    bcm2835_write(I2C_DLEN, write_len); 
-    for (int i = 0; i < write_len; i++) {
-        bcm2835_write(I2C_FIFO, write_data[i]);
-    }
-    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST); // Start transfer 
-
-    // Wait for the write to be DONE, capture status flags
-    while (!(bcm2835_read(I2C_S) & I2C_S_DONE)) {
-        uint32_t status = bcm2835_read(I2C_S); // Read status once here
-        if (status & (I2C_S_ERR)){
-            printk("Phase 1 Error: NACK received during write phase (sending 0x0F/0x10).\n");
-            return -1; // Error
-        }
-        if (status & I2C_S_CLKT) {
-            printk("Phase 1 Error: Clock timeout during write phase.\n");
-            return -1;
-        }
-    }
-    printk("Phase 1 complete (ACKed).\n"); // Debug 
-
-    delay(0x120000);
-    // Read 
-    // Clear DONE flag 
-    
-    //bcm2835_write(I2C_S, I2C_S_DONE); 
-    
-    // Set up for read
-    bcm2835_write(I2C_DLEN, read_len);
-    
-    bcm2835_write(I2C_C, I2C_C_I2CEN | I2C_C_ST | I2C_C_READ);
-
-    uint32_t index = 0;
-    while (1) {
-        uint32_t status = bcm2835_read(I2C_S);
-        // Read data in FIFO
-        while ((status & I2C_S_RXR) && (index < read_len)) {
-            read_data[index++] = bcm2835_read(I2C_FIFO);
-            status = bcm2835_read(I2C_S);
-        }
-        if (status & I2C_S_DONE) {
-            break; // Transfer complete
-        }
-        if (status & I2C_S_ERR) { 
-            printk("Phase 2 Error: NACK received during read phase (after Repeated Start).\n");
-            return -1; // Error
-        }
-        if (status & I2C_S_CLKT) {
-             printk("Phase 2 Error: Clock timeout during read phase.\n");
-            return -1;
-        }
-    }
-    printk("Phase 2 complete.\n"); // Debug
-
-    printk("End of i2c_write_read_combined\n");
+// fucntion that will take command registers and run them through read/writes
+static int i2c_write_read(uint8_t base, uint8_t func, uint8_t *buf, uint32_t len) {
+    uint8_t cmd[2] = { base, func };
+    if (i2c_write(SENSOR_ADDR, cmd, 2) < 0) return -1;      //write
+    delay(0x20000); // cycles wait for sensor
+    if (i2c_read(SENSOR_ADDR, buf, len) < 0) return -1;     //read
     return 0;
 }
 
+// Read soil capacitance (moisture)
+static uint16_t sensor_moisture(void) {
+    uint8_t buf[2];
+    if (i2c_write_read(SENSOR_TOUCH_BASE, SENSOR_TOUCH_FUNCTION, buf, 2) < 0) return 0;
+    uint16_t raw = (uint16_t)buf[0] << 8 | buf[1];
+    printk("buf[0]: %u, buf[1]: %u\n", buf[0]<<8, buf[1]);
+    return raw;
+}
+
+// Read temperature in °C
+// Sends command registers for getting temp
+static uint32_t sensor_temperature(void) {
+    uint8_t buf[4];
+    if (seesaw_read(SENSOR_STATUS_BASE, SENSOR_STATUS_TEMP, buf, 4) < 0)
+        return 0;
+
+    uint32_t raw = ((uint32_t)buf[0] << 24) |
+                   ((uint32_t)buf[1] << 16) |
+                   ((uint32_t)buf[2] << 8) |
+                    (uint32_t)buf[3];
+
+    // Convert fixed-point to milli-Celsius 
+    return (raw * 1000) >> 16;  // divide by 65536
+}
+
+// getting sensor data 
+void get_sensor_data(void) {
+    int i = 0;
+    //while (i < 4) {
+        uint32_t temp = sensor_temperature();
+        uint16_t moisture = sensor_moisture();
+        
+
+        printk("Moisture: %u   Temp: %u.%03u C\n", moisture, temp/1000, temp%1000);     // prints to serial
+        delay(0x150); //
+        i++;
+    //}
+}
