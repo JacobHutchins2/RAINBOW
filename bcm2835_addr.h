@@ -186,36 +186,35 @@
 #define SPI_Base (0x204000)
 
 #define SPI_CS     (SPI0_Base)             // SPI Master Control and Status
-#define SPI_CS_SELECT0 (0)              // SELECT SPI0 chip
-#define SPI_CS_SELECT1 (1)              // Select SPI1 chip
-#define SPI_CS_SELECT2 (2)              // Select SPI2 chip
-#define SPI_CS_CPHA_BEG (1<<2)             // Select First SCLK transition at beginning of data bit
-#define SPI_CS_CPOL_HIGH (1<<3)            // Rest state of clock is high
-#define SPI_CS_CLEAR_TX (1<<4)             // Clear Tx FIFO (one shot)
-#define SPI_CS_CLEAR_RX (2<<4)             // Clear Rx FIFO (one shot)
-#define SPI_CS_CSPOL_HIGH (1<<6)           // Chip select lines are active high
-#define SPI_CS_TRANSFER_ACTIVE (1<<7)      // Transfer active
-#define SPI_CS_DMAEN_ENABLE (1<<8)         // Enable DMA operation
-#define SPI_CS_INTD_ON (1<<9)             // Generate interrupt when DONE = 1
-#define SPI_CS_INTR_ON (1<<10)             // Generate interrupt when RXR = 1
-#define SPI_CS_ADCS_ON (1<<11)             // Auto Deassert Chip Select at end of DMA transfer
-#define SPI_CS_REN_WRITE (1<<12)               // Intend to Write to peripheral
-#define SPI_CS_LEN_LOSSI (1<<13)           // Interface acts as LoSSI master
-#define SPI_CS_DONE_DONE (1<<16)           // transfer done
-#define SPI_CS_RXD_USED (1<<17)            // RX FIFO being used/not empty
-#define SPI_CS_TXD_OPEN (1<<18)            // TX FIFO has room open
-#define SPI_CS_RXR_FULL (1<<19)            // RX FIFO is more full
-#define SPI_CS_RXF_FULL (1<<20)            // RX FIFO is full
-#define SPI_CS_CSPOL0_HIGH (1<<21)            // Chip select 0 is active high
-#define SPI_CS_CSPOL1_HIGH (1<<22)            // Chip select 1 is active high
-#define SPI_CS_CSPOL2_HIGH (1<<23)            // Chip select 2 is active high
-#define SPI_CS_DMA_LEN (1<<24)             // Enable DMA mode in LoSSI mode
-#define SPI_CS_LENLONG_32 (1<<25)          // Writing to FIFO will write 32 bit word
-
 
 #define SPI_FIFO   (SPI0_Base + 0x4)       // SPI Master Tx and Rx FIFOs
 #define SPI_CLK    (SPI0_Base + 0x8)       // SPI Master Clock Divider
 #define SPI_DLEN   (SPI0_Base + 0xc)       // SPI Master Data Length
 #define SPI_LTOH   (SPI0_Base + 0x10)      // SPI LOSSI mode TOH
 #define SPI_DC     (SPI0_Base + 0x14)      // SPI DMA DREQ Controls
+
+#define SPI_CS_SELECT0          (0<<0)              // SELECT SPI0 chip
+#define SPI_CS_SELECT1          (1<<0)              // Select SPI1 chip
+#define SPI_CS_SELECT2          (1<<1)              // Select SPI2 chip
+#define SPI_CS_CPHA_BEG         (1<<2)             // Select First SCLK transition at beginning of data bit
+#define SPI_CS_CPOL_HIGH        (1<<3)            // Rest state of clock is high
+#define SPI_CS_CLEAR            ((1<<4) | (1<<5))      // Clear Tx + Rx FIFO 
+#define SPI_CS_CSPOL_HIGH       (1<<6)           // Chip select lines are active high
+#define SPI_CS_TRANSFER_ACTIVE  (1<<7)      // Transfer active
+#define SPI_CS_DMAEN_ENABLE     (1<<8)         // Enable DMA operation
+#define SPI_CS_INTD_ON          (1<<9)             // Generate interrupt when DONE = 1
+#define SPI_CS_INTR_ON          (1<<10)             // Generate interrupt when RXR = 1
+#define SPI_CS_ADCS_ON          (1<<11)             // Auto Deassert Chip Select at end of DMA transfer
+#define SPI_CS_REN_WRITE        (1<<12)               // Intend to Write to peripheral
+#define SPI_CS_LEN_LOSSI        (1<<13)           // Interface acts as LoSSI master
+#define SPI_CS_DONE_DONE        (1<<16)           // transfer done
+#define SPI_CS_RXD_USED         (1<<17)            // RX FIFO being used/not empty
+#define SPI_CS_TXD_OPEN         (1<<18)            // TX FIFO has room open
+#define SPI_CS_RXR_FULL         (1<<19)            // RX FIFO is more full
+#define SPI_CS_RXF_FULL         (1<<20)            // RX FIFO is full
+#define SPI_CS_CSPOL0_HIGH      (1<<21)            // Chip select 0 is active high
+#define SPI_CS_CSPOL1_HIGH      (1<<22)            // Chip select 1 is active high
+#define SPI_CS_CSPOL2_HIGH      (1<<23)            // Chip select 2 is active high
+#define SPI_CS_DMA_LEN          (1<<24)             // Enable DMA mode in LoSSI mode
+#define SPI_CS_LENLONG_32       (1<<25)          // Writing to FIFO will write 32 bit word
 /*==================================================================================*/
