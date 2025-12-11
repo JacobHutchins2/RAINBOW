@@ -11,12 +11,12 @@ kernel.elf: kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
 			shell_commands.o interrupts.o timer.o \
-			syscalls.o display_io.o spi.o gpio.o 
+			syscalls.o display_io.o spi.o gpio.o tft.o
 	$(CROSS)ld $(LFLAGS) kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
 			shell_commands.o interrupts.o timer.o \
-			syscalls.o display_io.o spi.o gpio.o \
+			syscalls.o display_io.o spi.o gpio.o tft.o \
 			-Map kernel.map -o kernel.elf
 
 kernel_main.o: kernel_main.c
@@ -63,6 +63,9 @@ spi.o: spi.c spi.h
 
 gpio.o: gpio.c gpio.h
 	$(CROSS)$(CC) $(CFLAGS) -o gpio.o -c gpio.c
+
+tft.o: tft.c tft.h
+	$(CROSS)$(CC) $(CFLAGS) -o tft.o -c tft.c
 
 clean:
 	rm -f *~ *.o *.map *.elf kernel.img *.dis

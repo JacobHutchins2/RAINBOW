@@ -12,6 +12,7 @@
 #include "timer.h"
 #include "printk.h"
 #include "spi.h"
+#include "tft.h"
 // inlcude header of header files
 
 uint32_t io_base = 0x20000000;
@@ -48,7 +49,8 @@ void kernel_main(){
     spi_init();
     tft_gpio_init();
     tft_init();
-
+    printk("Testing TFT Print\n");      // debugging
+    printt(10, 10, "Testing print", 0xFFFF, 0x0000);
     // display data
     //moisture_display();
 

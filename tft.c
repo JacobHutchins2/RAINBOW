@@ -1,26 +1,15 @@
-/**
- * 8x8 monochrome bitmap fonts for rendering
- * Author: Daniel Hepper <daniel@hepper.net>
- *
- * License: Public Domain
- *
- * Based on:
- * // Summary: font8x8.h
- * // 8x8 monochrome bitmap fonts for rendering
- * //
- * // Author:
- * //     Marcel Sondaar
- * //     International Business Machines (public domain VGA fonts)
- * //
- * // License:
- * //     Public Domain
- *
- * Fetched from: http://dimensionalrift.homelinux.net/combuster/mos3/?p=viewsource&file=/modules/gfx/font8_8.asm
- **/
+#include <stdint.h>
+#include "bcm2835_addr.h"
+#include "mmio.h"
+#include "printk.h"
+#include "delay.h"
+#include "spi.h"
+#include "gpio.h"
+#include "printk.h"
+#include "tft.h"
 
-// Constant: font8x8_basic
-// Contains an 8x8 font map for unicode points U+0000 - U+007F (basic latin)
-char font8x8_basic[128][8] = {
+
+unsigned char font8x8[128][8] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0000 (nul)
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0001
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0002
@@ -150,3 +139,62 @@ char font8x8_basic[128][8] = {
     { 0x6E, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+007E (~)
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}    // U+007F
 };
+
+void tft_set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+    printk("Entering tft set addr func\n");
+    tft_write_cmd(0x2A); // Column addr set
+    tft_write_data(x0 >> 8);
+    tft_write_data(x0 & 0xFF);
+    tft_write_data(x1 >> 8);
+    tft_write_data(x1 & 0xFF);
+
+    tft_write_cmd(0x2B); // Row addr set
+    tft_write_data(y0 >> 8);
+    tft_write_data(y0 & 0xFF);
+    tft_write_data(y1 >> 8);
+    tft_write_data(y1 & 0xFF);
+
+    tft_write_cmd(0x2C); // Write to RAM
+    printk("Exiting tft set addr func\n");
+}
+
+// write pixel
+static void draw_pixel(int x, int y, uint16_t color) {
+    printk("Entering draw pixel func\n");
+    /*tft_set_addr(x, y, x, y);
+    tft_write_data(color >> 8);
+    tft_write_data(color & 0xFF);*/
+     uint8_t buf[2] = { color >> 8, color & 0xFF };
+
+    tft_set_addr(x, y, x, y);  // set window to 1 pixel
+    tft_write_buf(buf, 2);     // send high then low byte
+}
+
+// character drawing function
+static void tft_draw_char(int x, int y, unsigned char c, uint16_t color, uint16_t bg) {
+    printk("Entering tft draw char func\n");
+    if (c > 127) return;
+    const uint8_t *glyph = font8x8[c];
+
+    for (int col = 0; col < 8; col++) {
+        uint8_t line = glyph[col];
+        for (int row = 0; row < 8; row++) {
+            uint16_t pixel = (line & (1 << row)) ? color : bg;
+            draw_pixel(x + col, y + row, pixel);        // 
+        }
+    }
+
+    // 1-column spacing
+    for (int row = 0; row < 8; row++)
+        draw_pixel(x + 8, y + row, bg);
+    printk("Exiting tft draw char func\n");
+}
+
+void printt(int x, int y, const char *s, uint16_t color, uint16_t bg) {
+    while (*s) {
+        printk("In the printt function: ");
+        printk("*s ascii: %d\n", (unsigned char)*s);    // debugging
+        tft_draw_char(x, y, *s++, color, bg);
+        x += 9; // advance
+    }
+}

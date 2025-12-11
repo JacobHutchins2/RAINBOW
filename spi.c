@@ -83,9 +83,11 @@ void tft_write_cmd(uint8_t cmd) {
 
 // Write data to TFT display
 void tft_write_data(uint8_t data) {
+    printk("Entering tft write data\n");     // debugging
     gpio_write(8, 1);          // data mode
     bcm2835_write(SPI_FIFO, data);
     while (!(bcm2835_read(SPI_CS) & SPI_CS_DONE_DONE));
+    printk("Exiting tft write data\n");      // debugging
 }
 
 
@@ -105,8 +107,10 @@ void tft_init(void) {
     delay(0x20000);
 
     tft_write_cmd(0x28); // display off
-    tft_write_cmd(0x3A); tft_write_data(0x55); // 16-bit color
-    tft_write_cmd(0x36); tft_write_data(0x48); // memory access ctrl
+    tft_write_cmd(0x3A); 
+    tft_write_data(0x55); // 16-bit color
+    tft_write_cmd(0x36); 
+    tft_write_data(0x48); // memory access ctrl
     
     tft_write_cmd(0x11); // sleep out
     delay(0x20000);
