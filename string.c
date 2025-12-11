@@ -57,27 +57,7 @@ void parse_input(char *string) {
 	*/
 	if(compare(string, "read")){
 		printk("\n");
-		//uint8_t reg = 0x0F;
-
-		uint8_t cmd[2] = { 0x0F, 0x10 };
-		if(i2c_write(DEVICE_ADDRESS, cmd, 1) == -1){   // Point to moisture register
-			printk("Error writing to moisture sensor.\n");
-			uart_putc('\r');
-		    uart_putc('\n');   // line feed
-			return;
-		}
-		delay(0x220000);
-        uint8_t buf[2];
-		if(i2c_read(DEVICE_ADDRESS, buf, 2) == -1){
-			printk("Error reading from moisture sensor.\n");
-			uart_putc('\r');
-		    uart_putc('\n');   // line feed
-			return;
-		}
-
-		uint16_t moisture = (buf[0] << 8) | buf[1];
-		//uint16_t moisture = (buf[0]) | buf[1];
-		printk("\nMoisture reading: %u\n", moisture);
+		get_sensor_data();
 
         uart_putc('\r');
 		uart_putc('\n');   // line feed

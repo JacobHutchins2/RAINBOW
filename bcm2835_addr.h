@@ -185,13 +185,13 @@
 // base address for SPI module
 #define SPI_Base (0x204000)
 
-#define SPI_CS     (SPI0_Base)             // SPI Master Control and Status
+#define SPI_CS     (SPI_Base)             // SPI Master Control and Status
 
-#define SPI_FIFO   (SPI0_Base + 0x4)       // SPI Master Tx and Rx FIFOs
-#define SPI_CLK    (SPI0_Base + 0x8)       // SPI Master Clock Divider
-#define SPI_DLEN   (SPI0_Base + 0xc)       // SPI Master Data Length
-#define SPI_LTOH   (SPI0_Base + 0x10)      // SPI LOSSI mode TOH
-#define SPI_DC     (SPI0_Base + 0x14)      // SPI DMA DREQ Controls
+#define SPI_FIFO   (SPI_Base + 0x4)       // SPI Master Tx and Rx FIFOs
+#define SPI_CLK    (SPI_Base + 0x8)       // SPI Master Clock Divider
+#define SPI_DLEN   (SPI_Base + 0xc)       // SPI Master Data Length
+#define SPI_LTOH   (SPI_Base + 0x10)      // SPI LOSSI mode TOH
+#define SPI_DC     (SPI_Base + 0x14)      // SPI DMA DREQ Controls
 
 #define SPI_CS_SELECT0          (0<<0)              // SELECT SPI0 chip
 #define SPI_CS_SELECT1          (1<<0)              // Select SPI1 chip

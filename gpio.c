@@ -3,6 +3,7 @@
 #include "printk.h"
 #include "mmio.h"
 #include "bcm2835_addr.h"
+#include "delay.h"
 
 // Read value from GPIO pin
 uint32_t gpio_read(uint32_t pin){

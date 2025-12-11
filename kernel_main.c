@@ -11,6 +11,7 @@
 #include "interrupts.h"
 #include "timer.h"
 #include "printk.h"
+#include "spi.h"
 // inlcude header of header files
 
 uint32_t io_base = 0x20000000;
@@ -44,9 +45,9 @@ void kernel_main(){
     // Add this at system initialization, before any 'read' commands
     
 
-    uint8_t reset_cmd[2] = { 0x00, 0xFF};
-    i2c_write(0x36, reset_cmd, 2);        //reset sensor
-    delay(0x220000);
+    spi_init();
+    tft_gpio_init();
+    tft_init();
 
     // display data
     //moisture_display();
@@ -56,7 +57,7 @@ void kernel_main(){
 
     // enter shell/testing environment
     rainbow_shell();
-    printk("Why am I here?\n");
+    printk("Why am I here?\n");     // debugging
     while(1){
 
     }
