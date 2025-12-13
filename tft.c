@@ -141,7 +141,8 @@ unsigned char font8x8[128][8] = {
 };
 
 void tft_set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-    printk("Entering tft set addr func\n");
+    //printk("Entering tft set addr func\n");            //debugging
+    //spi_reset_cs();
     tft_write_cmd(0x2A); // Column addr set
     tft_write_data(x0 >> 8);
     tft_write_data(x0 & 0xFF);
@@ -155,24 +156,26 @@ void tft_set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     tft_write_data(y1 & 0xFF);
 
     tft_write_cmd(0x2C); // Write to RAM
-    printk("Exiting tft set addr func\n");
+    //printk("Exiting tft set addr func\n");      //debugging
 }
 
 // write pixel
 static void draw_pixel(int x, int y, uint16_t color) {
-    printk("Entering draw pixel func\n");
+    //printk("Entering draw pixel func\n");       //debugging
     /*tft_set_addr(x, y, x, y);
     tft_write_data(color >> 8);
     tft_write_data(color & 0xFF);*/
-     uint8_t buf[2] = { color >> 8, color & 0xFF };
+    // uint8_t buf[2] = { color >> 8, color & 0xFF };
 
     tft_set_addr(x, y, x, y);  // set window to 1 pixel
-    tft_write_buf(buf, 2);     // send high then low byte
+    //tft_write_buf(buf, 2);     // send high then low byte
+    tft_write_data(color >> 8);
+    tft_write_data(color & 0xFF);
 }
 
 // character drawing function
 static void tft_draw_char(int x, int y, unsigned char c, uint16_t color, uint16_t bg) {
-    printk("Entering tft draw char func\n");
+    //printk("Entering tft draw char func\n");        //debugging
     if (c > 127) return;
     const uint8_t *glyph = font8x8[c];
 
@@ -187,14 +190,49 @@ static void tft_draw_char(int x, int y, unsigned char c, uint16_t color, uint16_
     // 1-column spacing
     for (int row = 0; row < 8; row++)
         draw_pixel(x + 8, y + row, bg);
-    printk("Exiting tft draw char func\n");
+    //printk("Exiting tft draw char func\n");       //debugging
 }
 
 void printt(int x, int y, const char *s, uint16_t color, uint16_t bg) {
     while (*s) {
-        printk("In the printt function: ");
-        printk("*s ascii: %d\n", (unsigned char)*s);    // debugging
+        //printk("In the printt function: ");
+        //printk("*s ascii: %d\n", (unsigned char)*s);    // debugging
         tft_draw_char(x, y, *s++, color, bg);
-        x += 9; // advance
+        x += 8; // advance
+    }
+}
+
+void tft_fill_color(uint16_t color) {
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
+    tft_write_cmd(0x2A);  // Column address set
+    printk("First write done\n");    //debugging
+    tft_write_data(0x00);
+    printk("Second write done\n");   //debugging
+    tft_write_data(0x00);
+    printk("Third write done\n");    //debugging
+    tft_write_data(0x00);
+    printk("Fourth write done\n");   //debugging
+    tft_write_data(239);  // 240px wide
+    printk("Fifth write done\n");    //debugging
+
+    tft_write_cmd(0x2B);  // Row address set
+    printk("Sixth write done\n");    //debugging
+    tft_write_data(0x00);
+    printk("Seventh write done\n");  //debugging
+    tft_write_data(0x00);
+    printk("Eighth write done\n");   //debugging
+    tft_write_data(0x01);
+    tft_write_data(0x3F);  // 320px tall (0x13F)
+
+    tft_write_cmd(0x2C);  // Memory write
+    printk("Eleventh write done\n");   //debugging
+
+    // Write 240×320 pixels = 76800 pixels
+    for (int i = 0; i < 240 * 320; i++) {
+        printk("Writing pixel %d\n", i);   //debugging
+        tft_write_data(hi);
+        tft_write_data(lo);
     }
 }

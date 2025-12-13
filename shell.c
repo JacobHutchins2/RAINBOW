@@ -10,6 +10,8 @@
 #include "string.h"
 //#include "shell_commands.h"
 #include "printk.h"
+#include "buttons.h"
+#include "pwm.h"
 
 uint32_t rainbow_shell(void) {
 
@@ -43,6 +45,10 @@ uint32_t rainbow_shell(void) {
 				if (input_len < (int)(sizeof(buffer) - 1)) {		// Save to buffer if space remains
 					buffer[input_len++] = ch;						// otherwise ignore excess characters
 				}
+			}
+			// detects button press
+			if(button_pressed(17)){
+				pwm_set_duty(256);   // 25% duty cycle
 			}
 		}
 	}

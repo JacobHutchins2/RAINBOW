@@ -218,3 +218,16 @@
 #define SPI_CS_DMA_LEN          (1<<24)             // Enable DMA mode in LoSSI mode
 #define SPI_CS_LENLONG_32       (1<<25)          // Writing to FIFO will write 32 bit word
 /*==================================================================================*/
+
+/*======================================= PWM ======================================*/
+#define PWM_BASE     0x20C000
+#define PWM_CTL      (PWM_BASE + 0x00)
+#define PWM_RNG1     (PWM_BASE + 0x10)
+#define PWM_DAT1     (PWM_BASE + 0x14)
+
+#define CLK_BASE     0x101000
+#define CM_PWMCTL   (CLK_BASE + 0xA0)
+#define CM_PWMDIV   (CLK_BASE + 0xA4)
+
+#define CM_PASSWORD 0x5A000000
+/*==================================================================================*/

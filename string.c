@@ -8,6 +8,8 @@
 #include "printk.h"
 //#include "shell_commands.h"
 #include "serial.h"
+#include "spi.h"
+#include "tft.h"
 
 #define ESC "\033"			// ANSI Escape character
 #define DEVICE_ADDRESS 0x36  // I2C address for Adafruit Stemma Soil Sensor
@@ -33,6 +35,7 @@ void parse_input(char *string) {
 		printk("clear: clears the screen\n");
 		printk("scan: runs an i2cdetect\n");
 		printk("read: reads moisture sensor value\n");
+		printk("test: fills tft screen with red color\n");
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}
@@ -64,32 +67,22 @@ void parse_input(char *string) {
     }
 
 	// command to read moisture
-	if(compare(string, "sense")){
+	if(compare(string, "blank")){
 		printk("\n");
-		//uint8_t cmd[2] = { 0x0F, 0x10 };
-		//uint8_t buf[2];
-		get_sensor_data();
-
-		//uint16_t moisture = (buf[0] << 8) | buf[1];
-    
-    	//printk("\nMoisture reading: %u\n", moisture);
+		
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}
 
 	if(compare(string, "test")){
 		printk("\n");
-        uint8_t reg = 0x00;
-		int r = i2c_write(0x36, &reg, 1);
-		printk("i2c_write returned %d\n", r);
-/*
-		uint8_t dummy = 0;
-		int rv = i2c_write(0x36, &dummy, 1);
-*/
-		if (r == -1)
-			printk("0x36 NACK\n");
-		else
-			printk("0x36 ACK\n");
+        tft_fill_color(0xF800); // fill screen with red
+		/*tft_write_cmd(0x2C); // Memory Write
+		uint8_t red[2] = { 0xF8, 0x00 }; // RED
+		for (int i = 0; i < 240*320; i++) {
+			tft_write_buf(red, 2);
+		}*/
+		while(1);
         uart_putc('\r');
 		uart_putc('\n');   // line feed
     }
