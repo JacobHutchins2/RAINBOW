@@ -80,3 +80,11 @@ void gpio_set_pull(uint32_t pin, uint32_t pud){
     bcm2835_write(GPIO_PUD, 0);
     bcm2835_write(clk, 0);
 }
+
+void gpio_set(uint32_t pin){ 
+    bcm2835_write(GPIO_SET0, (1 << pin)); 
+}
+
+void gpio_clr(uint32_t pin){ 
+    bcm2835_write(GPIO_CLR0, (1 << pin)); 
+}

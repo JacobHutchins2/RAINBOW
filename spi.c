@@ -31,13 +31,16 @@ void spi_init(void) {
 
 
     // Reset SPI 
-    bcm2835_write(SPI_CS, SPI_CS_CLEAR);             // clear Tx/Rx FIFOs
+    bcm2835_write(SPI_CS, SPI_CS_CLEAR_RX | SPI_CS_CLEAR_TX | SPI_CS);
 
     // Set SPI clock
-    bcm2835_write(SPI_CLK, 32);  // 250 MHz / 64 = ~8 MHz
-    //bcm2835_write(SPI_CS, SPI_CS_CLEAR | SPI_CS_SELECT0 | 0);         // reset SPI CS
-    bcm2835_write(SPI_CS, SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE);     // start SPI
-    delay(0x400000);
+    bcm2835_write(SPI_CLK, 2500);  // 250 MHz / 64 = ~8 MHz --> 100kHz
+    // Mode 0 explicitly (CPOL=0, CPHA=0)
+    uint32_t cs = bcm2835_read(SPI_CS);
+    cs &= ~(SPI_CS_CPOL_HIGH | SPI_CS_CPHA_BEG);
+    bcm2835_write(SPI_CS, cs);
+
+    delay(0x10000);
 }
 
 void spi_write(uint8_t byte) {
@@ -58,7 +61,7 @@ void spi_write(uint8_t byte) {
     cs = bcm2835_read(SPI_CS);
     bcm2835_write(SPI_CS, cs & ~SPI_CS_TRANSFER_ACTIVE);
 }
-
+#if 0
 void spi_begin(void) {
     uint32_t cs = bcm2835_read(SPI_CS);
     cs |= SPI_CS_CLEAR;              // clear FIFOs
@@ -72,13 +75,16 @@ void spi_end(void) {
     cs &= ~SPI_CS_TRANSFER_ACTIVE;   // TA = 0 
     bcm2835_write(SPI_CS, cs);
 }
+#endif
+
+
 
 void spi_write_stream(const uint8_t *buf, int len) {
     uint32_t cs;
 
     // Clear FIFOs, select CS0, start transfer
     cs = bcm2835_read(SPI_CS);
-    cs |= SPI_CS_CLEAR | SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE;
+    cs |= SPI_CS_CLEAR_TX | SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE;
     bcm2835_write(SPI_CS, cs);
 
     for (int i = 0; i < len; i++) {
@@ -104,6 +110,8 @@ void spi_write_stream(const uint8_t *buf, int len) {
     bcm2835_write(SPI_CS, cs);
 }
 
+
+#if 0
 void spi_test_byte(uint8_t b) {
     printk("=== SPI TEST BEGIN ===\n");
 
@@ -135,7 +143,7 @@ void spi_test_byte(uint8_t b) {
 
     printk("=== SPI TEST END ===\n");
 }
-
+#endif
 
 /*
 These commands are specified starting on page 150 of the BCM2835 ARM Peripherals pdf

@@ -231,7 +231,7 @@ void tft_fill_color(uint16_t color) {
 
     // Write 240×320 pixels = 76800 pixels
     for (int i = 0; i < 240 * 320; i++) {
-        printk("Writing pixel %d\n", i);   //debugging
+        //printk("Writing pixel %d\n", i);   //debugging
         tft_write_data(hi);
         tft_write_data(lo);
     }

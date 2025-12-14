@@ -13,14 +13,14 @@ void pwm_init(void){
     delay(150);
 
     // Stop PWM clock
-    bcm2835_write(CM_PWMCTL, CM_PASSWORD | (1 << 5));
+    bcm2835_write(CM_PWMCTL, (1));
     delay(150);
 
     // Set clock divider 100kHz
-    bcm2835_write(CM_PWMDIV, CM_PASSWORD | (2500 << 12));
+    bcm2835_write(CM_PWMDIV, (1000));
 
     // Start PWM clock
-    bcm2835_write(CM_PWMCTL, CM_PASSWORD | 0x11);
+    bcm2835_write(CM_PWMCTL, 0x11);
     delay(150);
 
     // Set range
@@ -28,7 +28,7 @@ void pwm_init(void){
     delay(150);
 
     // Enable PWM channel 1, mark-space mode
-    bcm2835_write(PWM_CTL, (1 << 7) | (1 << 0));
+    bcm2835_write(PWM_CTL, 1);
 }
 
 void pwm_set_duty(uint32_t duty){

@@ -185,8 +185,7 @@
 // base address for SPI module
 #define SPI_Base (0x204000)
 
-#define SPI_CS     (SPI_Base)             // SPI Master Control and Status
-
+#define SPI_CS     (SPI_Base + 0x0)             // SPI Master Control and Status
 #define SPI_FIFO   (SPI_Base + 0x4)       // SPI Master Tx and Rx FIFOs
 #define SPI_CLK    (SPI_Base + 0x8)       // SPI Master Clock Divider
 #define SPI_DLEN   (SPI_Base + 0xc)       // SPI Master Data Length
@@ -198,7 +197,9 @@
 #define SPI_CS_SELECT2          (1<<1)              // Select SPI2 chip
 #define SPI_CS_CPHA_BEG         (1<<2)             // Select First SCLK transition at beginning of data bit
 #define SPI_CS_CPOL_HIGH        (1<<3)            // Rest state of clock is high
-#define SPI_CS_CLEAR            ((1<<4) | (1<<5))      // Clear Tx + Rx FIFO 
+#define SPI_CS_CLEAR_TX         (1<<4)
+#define SPI_CS_CLEAR_RX         (1<<5)
+//#define SPI_CS_CLEAR            ((1<<4) | (1<<5))      // Clear Tx + Rx FIFO 
 #define SPI_CS_CSPOL_HIGH       (1<<6)           // Chip select lines are active high
 #define SPI_CS_TRANSFER_ACTIVE  (1<<7)      // Transfer active
 #define SPI_CS_DMAEN_ENABLE     (1<<8)         // Enable DMA operation
@@ -229,5 +230,5 @@
 #define CM_PWMCTL   (CLK_BASE + 0xA0)
 #define CM_PWMDIV   (CLK_BASE + 0xA4)
 
-#define CM_PASSWORD 0x5A000000
+//#define CM_PASSWORD 0x5A000000
 /*==================================================================================*/
