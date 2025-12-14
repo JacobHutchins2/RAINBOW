@@ -10,6 +10,7 @@
 #include "serial.h"
 #include "spi.h"
 #include "tft.h"
+#include "buttons.h"
 
 #define ESC "\033"			// ANSI Escape character
 #define DEVICE_ADDRESS 0x36  // I2C address for Adafruit Stemma Soil Sensor
@@ -36,6 +37,7 @@ void parse_input(char *string) {
 		printk("scan: runs an i2cdetect\n");
 		printk("read: reads moisture sensor value\n");
 		printk("test: fills tft screen with red color\n");
+		printk("buttons_test: tests button presses\n");
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}
@@ -67,9 +69,9 @@ void parse_input(char *string) {
     }
 
 	// command to read moisture
-	if(compare(string, "blank")){
+	if(compare(string, "buttons_test")){
 		printk("\n");
-		
+		buttons_test();
 		uart_putc('\r');
 		uart_putc('\n');   // line feed
 	}

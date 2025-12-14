@@ -16,6 +16,7 @@
 #include "gpio.h"
 #include "buttons.h"
 #include "pwm.h"
+#include "ili9341.h"
 // inlcude header of header files
 
 uint32_t io_base = 0x20000000;
@@ -50,14 +51,6 @@ void kernel_main(){
     //moisture_data();
     // Add this at system initialization, before any 'read' commands
     
-
-    spi_init();
-    tft_gpio_init();
-    //spi_test_byte(0x2A);   // send ILI9341 “Column Address Set”
-    //while(1);
-    tft_init();
-    printk("Testing TFT Print\n");      // debugging
-    printt(10, 10, "Testing print", 0xFFFF, 0x0000);
     // display data
     //moisture_display();
 
@@ -73,24 +66,13 @@ void kernel_main(){
     tft_gpio_init();
     tft_init();
 
-    // Fill screen blue
-    /*tft_write_cmd(0x2A);
-    tft_write_data(0); tft_write_data(0);
-    tft_write_data(0); tft_write_data(239);
-
-    tft_write_cmd(0x2B);
-    tft_write_data(0); tft_write_data(0);
-    tft_write_data(1); tft_write_data(0x3F);
-
-    tft_write_cmd(0x2C);
-
-    uint8_t blue[2] = { 0x00, 0x1F };
-    for (int i = 0; i < 240*320; i++) {
-        tft_write_buf(blue, 2);
-    }*/
+    /*
+            Testing Display Driver
+    */
+    // init lcd
 
     //while (1);
-
+    //buttons_test();
     // enter shell/testing environment
     rainbow_shell();
     printk("Why am I here?\n");     // debugging
