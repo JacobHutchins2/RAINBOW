@@ -222,13 +222,33 @@
 
 /*======================================= PWM ======================================*/
 #define PWM_BASE     0x20C000
-#define PWM_CTL      (PWM_BASE + 0x00)
-#define PWM_RNG1     (PWM_BASE + 0x10)
-#define PWM_DAT1     (PWM_BASE + 0x14)
 
-#define CLK_BASE     0x101000
+#define PWM_CTL      (PWM_BASE + 0x00)  // PWM Control
+#define PWM_STA      (PWM_BASE + 0x04)  // PWM Status
+#define PWM_DMAC     (PWM_BASE + 0x08)  // PWM DMA Configuration
+#define PWM_RNG1     (PWM_BASE + 0x10)  // PWM Channel
+#define PWM_DAT1     (PWM_BASE + 0x14)  // PWM Channel 1 Data
+
+#define PWM_CTL_PWEN1       (1 << 0)    // Channel 1 Enable
+#define PWM_CTL_MODE1       (1 << 1)    // Channel 1 Mode
+#define PWM_CTL_RPTL1       (1 << 2)    // Channel 1 Repeat Last Data
+#define PWM_CTL_SBIT1       (1 << 3)    // Channel 1 Silence Bit
+#define PWM_CTL_POLA1       (1 << 4)    // Channel 1 Polarity
+#define PWM_CTL_USEF1       (1 << 5)    // Channel 1 use FIFO
+#define PWM_CTL_CLRF1       (1 << 6)    // Channel 1 Clear FIFO
+#define PWM_CTL_MSEN1       (1 << 7)    // Channel 1 M/S enable
+
+#define PWM_STA_FULL1       (1 << 0)    // Channel 1 FIFO Full
+#define PWM_STA_EMPT1       (1 << 1)    // Channel 1 FIFO Empty
+#define PWM_STA_WERR1       (1 << 2)    // Channel 1 Write Error
+#define PWM_STA_RERR1       (1 << 3)    // Channel 1 Read Error
+#define PWM_STA_GAPO1       (1 << 4)    // Channel 1 Gap Occurred
+#define PWM_STA_BERR        (1 << 8)    // Bus Error
+#define PWM_STA_STA1        (1 << 9)    // Channel 1 Status
+
+#define CLK_BASE        0x101000
 #define CM_PWMCTL   (CLK_BASE + 0xA0)
 #define CM_PWMDIV   (CLK_BASE + 0xA4)
 
-//#define CM_PASSWORD 0x5A000000
+#define CM_PASSWORD     0x5A000000
 /*==================================================================================*/

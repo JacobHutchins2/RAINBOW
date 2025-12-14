@@ -5,30 +5,33 @@
 #include "delay.h"
 #include "gpio.h"
 
-void pwm_init(void){
+void pwm_init(void) {
 
-    gpio_set_alt(18, 2);   // Set GPIO18 to ALT5 PWM0
-    // Stop PWM
+    // GPIO18 setting alt5
+    gpio_set_alt(18, 2);
+
+    // Disable PWM
     bcm2835_write(PWM_CTL, 0);
     delay(150);
 
-    // Stop PWM clock
-    bcm2835_write(CM_PWMCTL, (1));
+    // Kill PWM clock
+    bcm2835_write(CM_PWMCTL, CM_PASSWORD | (1 << 5));
     delay(150);
 
-    // Set clock divider 100kHz
-    bcm2835_write(CM_PWMDIV, (1000));
+    // Set clock divider 19.2 MHz / 100 = 192 kHz
+    bcm2835_write(CM_PWMDIV, CM_PASSWORD | (100 << 12));
+    delay(150);
 
-    // Start PWM clock
-    bcm2835_write(CM_PWMCTL, 0x11);
+    // Enable PWM clock OSC enabled
+    bcm2835_write(CM_PWMCTL, CM_PASSWORD | 0x11);
     delay(150);
 
     // Set range
-    bcm2835_write(PWM_RNG1, 1024);
+    bcm2835_write(PWM_RNG1, 1024);  // 192k / 1024 ~ 187Hz
     delay(150);
 
-    // Enable PWM channel 1, mark-space mode
-    bcm2835_write(PWM_CTL, 1);
+    // Enable PWM channel 1
+    bcm2835_write(PWM_CTL, PWM_CTL_PWEN1 | PWM_CTL_MSEN1);
 }
 
 void pwm_set_duty(uint32_t duty){

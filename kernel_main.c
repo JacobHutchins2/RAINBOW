@@ -57,6 +57,19 @@ void kernel_main(){
     // water output control
     pwm_init();
     printk("PWM Initialized.\n");
+
+    #if 0
+    // code used for testing if the PWM was working
+    pwm_set_duty(24);   // full ON
+    printk("PWM Duty Set.\n");
+    for(int k = 0; k < 10; k++){
+        int val = 100 * (k+1);
+        pwm_set_duty(val + 24);
+        delay(0x220000);
+    }
+    delay(0x1240000);       // wait 
+    #endif
+    
     pwm_set_duty(512);   // 50% duty cycle
     printk("PWM Duty Set to 50%%.\n");
     buttons_init();
