@@ -22,20 +22,6 @@
 uint32_t io_base = 0x20000000;
 uint32_t act_led_gpio = 47;
 
-#define TFT_DC   24     // data command
-#define TFT_RST  25     // reset
-
-#define LCD_ADDR 0x27
-
-#define LCD_D4  (1 << 0)
-#define LCD_D5  (1 << 1)
-#define LCD_D6  (1 << 2)
-#define LCD_D7  (1 << 3)
-#define LCD_EN  (1 << 4)
-#define LCD_RW  (1 << 5)
-#define LCD_RS  (1 << 6)
-#define LCD_BL  (1 << 7)
-
 
 //The start of the end.
 void kernel_main(){
@@ -106,7 +92,7 @@ void kernel_main(){
     // init lcd
     lcd_init();
     
-    lcd_set_cursor(0, 0);
+    /*lcd_set_cursor(0, 0);
     lcd_print("Hello");
 
     lcd_set_cursor(1, 0);
@@ -115,7 +101,7 @@ void kernel_main(){
 
     lcd_cmd(0x80);        // line 1
     lcd_data('H');
-    lcd_data('i');
+    lcd_data('i');*/
     //while (1);
     //buttons_test();
     // enter shell/testing environment

@@ -199,7 +199,7 @@
 #define SPI_CS_CPOL_HIGH        (1<<3)            // Rest state of clock is high
 #define SPI_CS_CLEAR_TX         (1<<4)
 #define SPI_CS_CLEAR_RX         (1<<5)
-//#define SPI_CS_CLEAR            ((1<<4) | (1<<5))      // Clear Tx + Rx FIFO 
+#define SPI_CS_CLEAR            ((1<<4) | (1<<5))      // Clear Tx + Rx FIFO 
 #define SPI_CS_CSPOL_HIGH       (1<<6)           // Chip select lines are active high
 #define SPI_CS_TRANSFER_ACTIVE  (1<<7)      // Transfer active
 #define SPI_CS_DMAEN_ENABLE     (1<<8)         // Enable DMA operation
