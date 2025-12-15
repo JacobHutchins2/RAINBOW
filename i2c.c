@@ -12,6 +12,22 @@
 #define SENSOR_TOUCH_FUNCTION 0x10
 #define SENSOR_STATUS_BASE   0x00
 #define SENSOR_STATUS_TEMP   0x04
+#define LCD_ADDR 0x27
+
+#if 0
+#define LCD_D4  (1 << 0)
+#define LCD_D5  (1 << 1)
+#define LCD_D6  (1 << 2)
+#define LCD_D7  (1 << 3)
+#define LCD_EN  (1 << 4)
+#define LCD_RW  (1 << 5)
+#define LCD_RS  (1 << 6)
+#define LCD_BL  (1 << 7)
+#endif
+#define LCD_RS  (1 << 0)
+#define LCD_RW  (1 << 1)
+#define LCD_EN  (1 << 2)
+#define LCD_BL  (1 << 3)
 
 void i2c_init(void) {
     // Set to ALT0 for I2C1 
@@ -197,4 +213,67 @@ void get_sensor_data(void) {
         delay(0x150); //
         i++;
     //}
+}
+
+/*======================================== DISPLAY CODE ========================================*/
+
+static void lcd_i2c_write(uint8_t v){
+    i2c_write(LCD_ADDR, &v, 1);
+}
+
+static void lcd_pulse(uint8_t data){
+    lcd_i2c_write(data | LCD_EN);
+    delay(150);
+    lcd_i2c_write(data & ~LCD_EN);
+    delay(150);
+}
+
+static void lcd_write4(uint8_t nibble, uint8_t rs){
+    uint8_t data = LCD_BL | rs | (nibble << 4);
+    lcd_pulse(data);
+}
+
+void lcd_cmd(uint8_t cmd){
+    lcd_write4(cmd >> 4, 0);
+    lcd_write4(cmd & 0x0F, 0);
+    delay(2000);
+}
+
+void lcd_data(uint8_t ch){
+    lcd_write4(ch >> 4, LCD_RS);
+    lcd_write4(ch & 0x0F, LCD_RS);
+}
+
+void lcd_init(void){
+    printk("Entering lcd init.\n");
+    delay_ms(150);  // wait after power-up
+
+    // Init sequence
+    lcd_write4(0x03, 0);
+    delay_ms(50);
+    lcd_write4(0x03, 0);
+    delay_ms(50);
+    lcd_write4(0x03, 0);
+    delay_ms(50);
+    lcd_write4(0x02, 0);  // 4-bit mode
+
+    lcd_cmd(0x28); // 4-bit, 2-line, 5x8
+    lcd_cmd(0x0C); // display ON, cursor OFF
+    lcd_cmd(0x06); // entry mode
+    lcd_cmd(0x01); // clear
+    printk("Exiting lcd init.\n");
+}
+
+void lcd_set_cursor(uint8_t row, uint8_t col){
+    printk("Entering lcd set cursor.\n");
+    uint8_t addr = (row == 0) ? 0x00 : 0x40;
+    lcd_cmd(0x80 | (addr + col));
+    printk("Entering lcd set cursor.\n");
+}
+
+void lcd_print(const char *s){
+    printk("Entering lcd print.\n");
+    while (*s)
+        lcd_data(*s++);
+    printk("Exiting lcd print.\n");
 }

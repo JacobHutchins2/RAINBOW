@@ -22,6 +22,20 @@
 uint32_t io_base = 0x20000000;
 uint32_t act_led_gpio = 47;
 
+#define TFT_DC   24     // data command
+#define TFT_RST  25     // reset
+
+#define LCD_ADDR 0x27
+
+#define LCD_D4  (1 << 0)
+#define LCD_D5  (1 << 1)
+#define LCD_D6  (1 << 2)
+#define LCD_D7  (1 << 3)
+#define LCD_EN  (1 << 4)
+#define LCD_RW  (1 << 5)
+#define LCD_RS  (1 << 6)
+#define LCD_BL  (1 << 7)
+
 
 //The start of the end.
 void kernel_main(){
@@ -58,32 +72,50 @@ void kernel_main(){
     pwm_init();
     printk("PWM Initialized.\n");
 
-    #if 0
-    // code used for testing if the PWM was working
-    pwm_set_duty(24);   // full ON
-    printk("PWM Duty Set.\n");
-    for(int k = 0; k < 10; k++){
-        int val = 100 * (k+1);
-        pwm_set_duty(val + 24);
-        delay(0x220000);
-    }
-    delay(0x1240000);       // wait 
-    #endif
     
     pwm_set_duty(512);   // 50% duty cycle
     printk("PWM Duty Set to 50%%.\n");
     buttons_init();
     printk("Buttons Initialized.\n");
     //pump_control();
+    //spi_init();
+    //tft_init();
     spi_init();
-    tft_gpio_init();
-    tft_init();
+    //tft_gpio_init();
 
+    //tft_init();
+    #if 0
+    tft_set_window(0, 0, 239, 319);
+
+    uint8_t red[2] = { 0xF8, 0x00 };
+    gpio_write(TFT_DC, 1);
+
+    for (int i = 0; i < 240 * 320; i++) {
+        spi_write_stream(red, 2);
+    }
+    printk("Hit the infinite wait.\n");
+    while (1);
+
+    tft_fill(0x0000); // black
+
+    tft_draw_string(10, 10, "HELLO BARE METAL", 0xFFFF, 0x0000);
+    #endif
     /*
             Testing Display Driver
     */
     // init lcd
+    lcd_init();
+    
+    lcd_set_cursor(0, 0);
+    lcd_print("Hello");
 
+    lcd_set_cursor(1, 0);
+    lcd_print("Bare Metal!");
+
+
+    lcd_cmd(0x80);        // line 1
+    lcd_data('H');
+    lcd_data('i');
     //while (1);
     //buttons_test();
     // enter shell/testing environment

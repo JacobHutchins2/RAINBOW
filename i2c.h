@@ -3,3 +3,8 @@ int i2c_write(uint8_t addr, const uint8_t *data, uint32_t len);
 int i2c_read(uint8_t addr, uint8_t *data, uint32_t len);
 int i2c_scan(void);
 void get_sensor_data(void);
+void lcd_init(void);
+void lcd_set_cursor(uint8_t row, uint8_t col);
+void lcd_print(const char *s);
+void lcd_data(uint8_t ch);
+void lcd_cmd(uint8_t cmd);

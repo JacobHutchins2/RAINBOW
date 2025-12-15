@@ -6,3 +6,6 @@ void tft_write_cmd(uint8_t cmd);
 void tft_write_buf(uint8_t *buf, int len);
 void spi_write_stream(const uint8_t *buf, int len);
 void spi_test_byte(uint8_t b);
+void tft_fill(uint16_t color);
+void tft_draw_string(uint16_t x, uint16_t y, const char *s, uint16_t fg, uint16_t bg);
+void tft_set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);

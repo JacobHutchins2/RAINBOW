@@ -6,6 +6,7 @@
 #include "spi.h"
 #include "gpio.h"
 #include "printk.h"
+#include "font.h"
 
 #define TFT_DC   24     // data command
 #define TFT_RST  25     // reset
@@ -31,10 +32,10 @@ void spi_init(void) {
 
 
     // Reset SPI 
-    bcm2835_write(SPI_CS, SPI_CS_CLEAR_RX | SPI_CS_CLEAR_TX | SPI_CS);
+    bcm2835_write(SPI_CS, SPI_CS_CLEAR_RX | SPI_CS_CLEAR_TX | SPI_CS_SELECT0);
 
     // Set SPI clock
-    bcm2835_write(SPI_CLK, 2500);  // 250 MHz / 64 = ~8 MHz --> 100kHz
+    bcm2835_write(SPI_CLK, 64);  // 250 MHz / 64 = ~8 MHz --> 100kHz
     // Mode 0 explicitly (CPOL=0, CPHA=0)
     uint32_t cs = bcm2835_read(SPI_CS);
     cs &= ~(SPI_CS_CPOL_HIGH | SPI_CS_CPHA_BEG);
@@ -43,6 +44,7 @@ void spi_init(void) {
     delay(0x10000);
 }
 
+#if 0
 void spi_write(uint8_t byte) {
 
     // Wait for TX FIFO space
@@ -61,22 +63,7 @@ void spi_write(uint8_t byte) {
     cs = bcm2835_read(SPI_CS);
     bcm2835_write(SPI_CS, cs & ~SPI_CS_TRANSFER_ACTIVE);
 }
-#if 0
-void spi_begin(void) {
-    uint32_t cs = bcm2835_read(SPI_CS);
-    cs |= SPI_CS_CLEAR;              // clear FIFOs
-    cs |= SPI_CS_SELECT0;            // choose CS0
-    cs |= SPI_CS_TRANSFER_ACTIVE;    // TA = 1
-    bcm2835_write(SPI_CS, cs);
-}
-
-void spi_end(void) {
-    uint32_t cs = bcm2835_read(SPI_CS);
-    cs &= ~SPI_CS_TRANSFER_ACTIVE;   // TA = 0 
-    bcm2835_write(SPI_CS, cs);
-}
 #endif
-
 
 
 void spi_write_stream(const uint8_t *buf, int len) {
@@ -84,7 +71,8 @@ void spi_write_stream(const uint8_t *buf, int len) {
 
     // Clear FIFOs, select CS0, start transfer
     cs = bcm2835_read(SPI_CS);
-    cs |= SPI_CS_CLEAR_TX | SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE;
+    cs |= SPI_CS_CLEAR_TX | SPI_CS_CLEAR_RX | SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE;
+    cs &= ~(SPI_CS_CPOL_HIGH | SPI_CS_CPHA_BEG);
     bcm2835_write(SPI_CS, cs);
 
     for (int i = 0; i < len; i++) {
@@ -97,7 +85,7 @@ void spi_write_stream(const uint8_t *buf, int len) {
 
         // Drain RX FIFO (ILI9341 always returns a byte)
         while (bcm2835_read(SPI_CS) & SPI_CS_RXD_USED) {
-            (void)bcm2835_read(SPI_FIFO);
+            bcm2835_read(SPI_FIFO);
         }
     }
 
@@ -111,40 +99,6 @@ void spi_write_stream(const uint8_t *buf, int len) {
 }
 
 
-#if 0
-void spi_test_byte(uint8_t b) {
-    printk("=== SPI TEST BEGIN ===\n");
-
-    // DC = command mode
-    gpio_write(TFT_DC, 0);
-
-    // Activate SPI
-    uint32_t cs = bcm2835_read(SPI_CS);
-    cs |= SPI_CS_CLEAR | SPI_CS_SELECT0 | SPI_CS_TRANSFER_ACTIVE;
-    bcm2835_write(SPI_CS, cs);
-
-    // Wait for FIFO space
-    while(!(bcm2835_read(SPI_CS) & SPI_CS_TXD_OPEN))
-        printk("waiting TXD...\n");
-
-    bcm2835_write(SPI_FIFO, b);
-    printk("wrote byte\n");
-
-    // Wait DONE
-    while(!(bcm2835_read(SPI_CS) & SPI_CS_DONE_DONE))
-        printk("waiting DONE...\n");
-
-    printk("DONE!\n");
-
-    // deactivate
-    cs = bcm2835_read(SPI_CS);
-    cs &= ~SPI_CS_TRANSFER_ACTIVE;
-    bcm2835_write(SPI_CS, cs);
-
-    printk("=== SPI TEST END ===\n");
-}
-#endif
-
 /*
 These commands are specified starting on page 150 of the BCM2835 ARM Peripherals pdf
 */
@@ -156,10 +110,10 @@ void tft_gpio_init(void){
     gpio_set_output(TFT_BL);
     gpio_write(TFT_BL, 1);   // Turn on backlight
     gpio_write(13, 1);   // For controlling Q2 Mosfet connected to ground
-    gpio_write(TFT_RST, 1);
-    delay(0x200000);
     gpio_write(TFT_RST, 0);
-    delay(0x200000);
+    delay_ms(50);
+    gpio_write(TFT_RST, 1);
+    delay_ms(150);
     
 }
 
@@ -190,8 +144,9 @@ void tft_write_buf(uint8_t *buf, int len) {
 
 void tft_init(void) {
     printk("Entering tft init.\n");      // debugging
+    tft_gpio_init();
     tft_write_cmd(0x01); // software reset
-    delay(0x20000);
+    delay_ms(150);
 
     tft_write_cmd(0x28); // display off
     tft_write_cmd(0x3A); 
@@ -200,8 +155,74 @@ void tft_init(void) {
     tft_write_data(0x48); // memory access ctrl
     
     tft_write_cmd(0x11); // sleep out
-    delay(0x20000);
+    delay_ms(150);
 
     tft_write_cmd(0x29); // Display on
-    delay(0x220000);
+    delay_ms(100);
+}
+
+/* ===== Set draw window ===== */
+void tft_set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+
+    tft_write_cmd(0x2A);
+    tft_write_data(x0 >> 8); 
+    tft_write_data(x0);
+    tft_write_data(x1 >> 8); 
+    tft_write_data(x1);
+
+    tft_write_cmd(0x2B);
+    tft_write_data(y0 >> 8); 
+    tft_write_data(y0);
+    tft_write_data(y1 >> 8); 
+    tft_write_data(y1);
+
+    tft_write_cmd(0x2C);
+}
+
+/* ===== Fill screen ===== */
+void tft_fill(uint16_t color) {
+
+    tft_set_window(0, 0, 239, 319);
+
+    uint8_t px[2] = { color >> 8, color & 0xFF };
+
+    gpio_write(TFT_DC, 1);
+    for (int i = 0; i < 240 * 320; i++)
+        spi_write_stream(px, 2);
+}
+
+void tft_draw_char(uint16_t x, uint16_t y,
+                   char c,
+                   uint16_t fg,
+                   uint16_t bg) {
+
+    if (c < FONT_FIRST || c > FONT_LAST)
+        c = '?';
+
+    const uint8_t *glyph = FONTS[c - FONT_FIRST];
+
+    tft_set_window(x, y, x + FONT_WIDTH - 1, y + FONT_HEIGHT - 1);
+
+    uint8_t px[2];
+    gpio_write(TFT_DC, 1);
+
+    for (int row = 0; row < FONT_HEIGHT; row++) {
+        for (int col = 0; col < FONT_WIDTH; col++) {
+
+            uint16_t color =
+                (glyph[col] & (1 << row)) ? fg : bg;
+
+            px[0] = color >> 8;
+            px[1] = color & 0xFF;
+            spi_write_stream(px, 2);
+        }
+    }
+}
+
+void tft_draw_string(uint16_t x, uint16_t y, const char *s, uint16_t fg, uint16_t bg) {
+
+    while (*s) {
+        tft_draw_char(x, y, *s++, fg, bg);
+        x += FONT_WIDTH + 1;
+    }
 }

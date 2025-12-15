@@ -6,3 +6,10 @@ static inline void delay(int32_t count) {       // inline assembly to acoid opti
 		: /* inputs */
 		: "cc" /* clobbers */);     // 
 }
+
+// ms delay
+static inline void delay_ms(int ms) {
+    for (int i = 0; i < ms; i++) {
+        delay(230000);   // ≈ 1 ms on Pi 1 @ 700 MHz
+    }
+}
