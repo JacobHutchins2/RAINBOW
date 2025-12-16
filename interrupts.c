@@ -44,7 +44,7 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
                 end_day = 0;
             }
             if(minute >= 60){
-                hour++;
+                hour++;     // next hour
 
                 minute = 0;     //resetting minute
                 if(hour >= 24){

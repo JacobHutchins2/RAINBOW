@@ -12,6 +12,7 @@
 #include "printk.h"
 #include "buttons.h"
 #include "pwm.h"
+#include "timer.h"
 
 
 
@@ -27,6 +28,13 @@ uint32_t rainbow_shell(void) {
 	#endif
 	int track_command = 0;
 	int on_display = 0;
+
+	const char* cmd_buf[] = {
+		"Read Moisture",
+		"Cycle Pump",
+		"Presets",
+		"Set Time"
+	};
 	
 	/* Enter the "rainbow" */
 
@@ -46,12 +54,17 @@ uint32_t rainbow_shell(void) {
 			lcd_set_cursor(0, 0);
 			lcd_print("Menu:");
 			lcd_set_cursor(1, 0);
+			lcd_print(cmd_buf[track_command]);
+
+			//resetting on_display
+			on_display = 0;
 		}
 
 		if(read_button(0)){
 
 			// see time
-
+			get_time();
+			while(!read_button(2));		//click ok to go back to menu
 		}
 
 		if(read_button(1)){
@@ -60,7 +73,8 @@ uint32_t rainbow_shell(void) {
 				track_command--;
 			}
 			else{
-				// wrap around?
+				// wrap around
+				track_command = 3;
 			}
 		}
 
@@ -75,7 +89,8 @@ uint32_t rainbow_shell(void) {
 				track_command++;
 			}
 			else{
-				// wrap around?
+				// wrap around
+				track_command = 0;
 			}
 		}
 

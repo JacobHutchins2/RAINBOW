@@ -2,11 +2,20 @@
 #include "mmio.h"
 #include "bcm2835_addr.h"
 #include "timer.h"
+#include "buttons.h"
+#include "i2c.h"
+#include "printk.h"
 
 // global counter
 uint32_t tick_counter = 0;
 uint32_t hour = 0;
 uint32_t minute = 0;
+
+typedef enum {
+    SET_HOUR,
+    SET_MINUTE,
+    SET_DONE
+} time_set_t;
 
 int timer_init(void){
     uint32_t old;
@@ -28,14 +37,73 @@ int timer_init(void){
     return 0;
 }
 
-/*uint32_t clock_set(uint32_t time1, uint32_t time2){
+void clock_set(void){
 
+    static time_set_t state = SET_HOUR;
     
+    // waiting for time to be inputted
+    while(1){
+    
+        // detecting buttons
+        int up   = read_button(1); // UP
+        int ok   = read_button(2); // OK
+        int down = read_button(3); // DOWN
 
+        //setting time
+        switch (state) {
+
+            //setting hour
+            case SET_HOUR:
+                if (up) {
+                    hour = hour + 1;
+                }
+                if (down) {
+                    hour = (hour == 0) ? 23 : hour - 1;
+                }
+                if (ok) {
+                    state = SET_MINUTE;
+                }
+                continue;
+
+            //setting minute
+            case SET_MINUTE:
+                if (up) {
+                    minute = (minute + 1);
+                }
+                if (down) {
+                    minute = (minute == 0) ? 59 : minute - 1;
+                }
+                if (ok) {
+                    state = SET_DONE;
+                }
+                continue;
+
+            case SET_DONE:
+                // exit time-setting mode
+                // reset tick counter so time resumes cleanly
+                tick_counter = 0;
+                state = SET_HOUR;   // ready for next time-set
+                break;
+        }
+
+        // small delay for button debounce
+        delay_ms(200);
+
+    }
 }
 
-uint32_t clock(void){
+void get_time(void){
 
+    // show current time
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("Time:");
+    lcd_set_cursor(1, 6);
+    //print hour
+    lcd_print_int(hour);
+    //print minute
+    lcd_print_int(minute);
 
-
-}*/
+    //printing time over serial
+    printk("Time:\n     %d%d\n", hour, minute);
+}
