@@ -18,8 +18,8 @@ void pwm_init(void) {
     bcm2835_write(CM_PWMCTL, CM_PASSWORD | (1 << 5));
     delay(150);
 
-    // Set clock divider 19.2 MHz / 100 = 192 kHz
-    bcm2835_write(CM_PWMDIV, CM_PASSWORD | (100 << 12));
+    // Set clock divider 19.2 MHz / 1920 = 10 kHz
+    bcm2835_write(CM_PWMDIV, CM_PASSWORD | (1920 << 12));
     delay(150);
 
     // Enable PWM clock OSC enabled

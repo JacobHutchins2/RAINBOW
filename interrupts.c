@@ -7,6 +7,7 @@
 
 // global var
 int blink_en = 1;
+int end_day = 0;
 
 void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
 
@@ -21,16 +22,37 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
         static int lit = 0;
 
         if(blink_en){
-        if(lit){        // ACT blink on
-            act_off();
-            lit = 0;
+            if(lit){        // ACT blink on
+                act_off();
+                lit = 0;
+            }
+            else{
+                act_on();  // ACT blink off
+                lit = 1;
+            }
         }
-        else{
-            act_on();  // ACT blink off
-            lit = 1;
+        tick_counter++;     // increment timer
+
+        
+        //tracking time
+        if(tick_counter >= 60){
+            minute++;
+
+            tick_counter = 0;
+            if(end_day == 1){
+                hour = 0;       //hour reset
+                end_day = 0;
+            }
+            if(minute >= 60){
+                hour++;
+
+                minute = 0;     //resetting minute
+                if(hour >= 24){
+
+                    end_day = 1;    //day reset 
+                }
+            }
         }
-        }
-        //tick_counter++;     // increment timer
     }
     else{
         printk("Unkown interrupt %x\n", pending);

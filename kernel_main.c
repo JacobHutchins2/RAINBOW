@@ -58,9 +58,11 @@ void kernel_main(){
     pwm_init();
     printk("PWM Initialized.\n");
 
-    
-    pwm_set_duty(512);   // 50% duty cycle
-    printk("PWM Duty Set to 50%%.\n");
+    pwm_set_duty(0);
+    printk("Duty at 0, small wait.\n");
+    delay_ms(200);
+    pwm_set_duty(256);   // 25% duty cycle
+    printk("PWM Duty Set to 25%%.\n");
     buttons_init();
     printk("Buttons Initialized.\n");
     //pump_control();

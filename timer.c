@@ -5,6 +5,8 @@
 
 // global counter
 uint32_t tick_counter = 0;
+uint32_t hour = 0;
+uint32_t minute = 0;
 
 int timer_init(void){
     uint32_t old;
@@ -13,7 +15,7 @@ int timer_init(void){
     old = bcm2835_read(TIMER_CONTROL);
     old &= ~(TIMER_CONTROL_ENABLE | TIMER_CONTROL_INT_ENABLE);
 
-    bcm2835_write(TIMER_PREDIVIDER, 0xf9);      // divide to 1MHz
+    bcm2835_write(TIMER_PREDIVIDER, 0xf9);      // divide to 1MHz // 250MHz / 256
 
     bcm2835_write(TIMER_LOAD, 3906);        // load counter for around 1Hz
 
@@ -24,4 +26,16 @@ int timer_init(void){
     bcm2835_write(IRQ_ENABLE_BASIC_IRQ, IRQ_ENABLE_BASIC_IRQ_ARM_TIMER);
 
     return 0;
+}
+
+uint32_t clock_set(uint32_t time1, uint32_t time2){
+
+    
+
+}
+
+uint32_t clock(void){
+
+
+    
 }
