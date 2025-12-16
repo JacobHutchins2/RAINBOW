@@ -33,7 +33,8 @@ uint32_t rainbow_shell(void) {
 		"Read Moisture",
 		"Cycle Pump",
 		"Presets",
-		"Set Time"
+		"Set Time",
+		"Serial Command"
 	};
 	
 	/* Enter the "rainbow" */
@@ -74,7 +75,7 @@ uint32_t rainbow_shell(void) {
 			}
 			else{
 				// wrap around
-				track_command = 3;
+				track_command = 4;
 			}
 		}
 
@@ -85,7 +86,7 @@ uint32_t rainbow_shell(void) {
 
 		if(read_button(3)){
 			// move forward a command
-			if(track_command < 4){
+			if(track_command < 5){
 				track_command++;
 			}
 			else{
