@@ -17,14 +17,72 @@
 
 uint32_t rainbow_shell(void) {
 
+	// vars
+	#if 0
 	uint32_t ch;
 	char buffer[256];
 	int input_len = 0;
 	int command_prompt = 0;
 	int command_active = 0;
+	#endif
+	int track_command = 0;
+	int on_display = 0;
 	
 	/* Enter the "rainbow" */
 
+	lcd_cmd(0x01); // clear
+	lcd_set_cursor(0, 0);
+    lcd_print("Menu:");
+    delay_ms(150);
+	lcd_set_cursor(1, 0);
+    lcd_print("Read Moisture");
+
+	while(1){
+
+		if(on_display){
+
+			// show current command
+			lcd_cmd(0x01); // clear
+			lcd_set_cursor(0, 0);
+			lcd_print("Menu:");
+			lcd_set_cursor(1, 0);
+		}
+
+		if(read_button(0)){
+
+			// see time
+
+		}
+
+		if(read_button(1)){
+			// move back a command
+			if(track_command > 0){
+				track_command--;
+			}
+			else{
+				// wrap around?
+			}
+		}
+
+		if(read_button(2)){
+			// do selected command
+			do_command(track_command);
+		}
+
+		if(read_button(3)){
+			// move forward a command
+			if(track_command < 4){
+				track_command++;
+			}
+			else{
+				// wrap around?
+			}
+		}
+
+	}
+    
+
+	#if 0
 	while(1){
 
 		if(command_prompt == 0){
@@ -77,5 +135,6 @@ uint32_t rainbow_shell(void) {
 			
 		
 	}
+	#endif
 	printk("Hey! You shouldn't be here!\n");
 }

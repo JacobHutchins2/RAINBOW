@@ -31,84 +31,65 @@ void kernel_main(){
     // hardware initialization / interrupts
     uart_init();
     printk("UART initialized.\n");
+
+    // init i2c
+    i2c_init();
+    printk("i2c Initialized.\n");
+
+    // init lcd
+    lcd_init();
+    printk("lcd initialized.\n");
+    lcd_set_cursor(0, 0);
+    lcd_print("UART INITIALIZED.");
+    lcd_set_cursor(0, 0);
+    lcd_print("i2c INITIALIZED.");
+    lcd_set_cursor(0, 0);
+    lcd_print("LCD INITIALIZED.");
+
     // active LED start to show a heartbeat
     heartbeat_init();
     printk("Heartbeat started.\n");
-    // Register base setup
-    /* GPIO addresses setup in bcm2835_addr.c */
+    lcd_set_cursor(0, 0);
+    lcd_print("HEARTBEAT INITIALIZED.");
 
     // timer setup
     timer_init();
     printk("Timer Initialized.\n");
-    //spi_init();
+    lcd_set_cursor(0, 0);
+    lcd_print("TIMER INITIALIZED.");
+
+    // init interrupts
     enable_interrupts();
     printk("Interrupts Enabled.\n");
+    lcd_set_cursor(0, 0);
+    lcd_print("INTR INITIALIZED.");
 
-    // sensor initialization / control
-    i2c_init();
-    printk("i2c Initialized.\n");
-    // data processing
-    //moisture_data();
-    // Add this at system initialization, before any 'read' commands
-    
-    // display data
-    //moisture_display();
-
+    // pwm init
     // water output control
     pwm_init();
+    pwm_set_duty(0);    //making sure pump is off
     printk("PWM Initialized.\n");
+    lcd_set_cursor(0, 0);
+    lcd_print("PWM INITIALIZED.");
 
-    pwm_set_duty(0);
-    printk("Duty at 0, small wait.\n");
-    delay_ms(200);
-    pwm_set_duty(256);   // 25% duty cycle
-    printk("PWM Duty Set to 25%%.\n");
-    buttons_init();
-    printk("Buttons Initialized.\n");
-    //pump_control();
-    //spi_init();
-    //tft_init();
+    // spi init
     spi_init();
-    //tft_gpio_init();
+    printk("SPI Initialized.\n");
+    lcd_set_cursor(0, 0);
+    lcd_print("SPI INITIALIZED.");
+    lcd_cmd(0x01); // clear
 
-    //tft_init();
-    #if 0
-    tft_set_window(0, 0, 239, 319);
+    lcd_set_cursor(0, 0);
+    lcd_print("Entering Shell.");
+    delay_ms(150);
+    lcd_cmd(0x01); // clear
 
-    uint8_t red[2] = { 0xF8, 0x00 };
-    gpio_write(TFT_DC, 1);
-
-    for (int i = 0; i < 240 * 320; i++) {
-        spi_write_stream(red, 2);
-    }
-    printk("Hit the infinite wait.\n");
-    while (1);
-
-    tft_fill(0x0000); // black
-
-    tft_draw_string(10, 10, "HELLO BARE METAL", 0xFFFF, 0x0000);
-    #endif
-    /*
-            Testing Display Driver
-    */
-    // init lcd
-    lcd_init();
-    
-    /*lcd_set_cursor(0, 0);
-    lcd_print("Hello");
-
-    lcd_set_cursor(1, 0);
-    lcd_print("Bare Metal!");
-
-
-    lcd_cmd(0x80);        // line 1
-    lcd_data('H');
-    lcd_data('i');*/
-    //while (1);
-    //buttons_test();
     // enter shell/testing environment
     rainbow_shell();
     printk("Why am I here?\n");     // debugging
+    lcd_set_cursor(0, 0);
+    lcd_cmd(0x01); // clear
+    lcd_print("ERROR W/ SHELL.");
     while(1){
 
     }

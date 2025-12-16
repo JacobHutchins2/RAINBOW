@@ -28,7 +28,7 @@ int timer_init(void){
     return 0;
 }
 
-uint32_t clock_set(uint32_t time1, uint32_t time2){
+/*uint32_t clock_set(uint32_t time1, uint32_t time2){
 
     
 
@@ -37,5 +37,5 @@ uint32_t clock_set(uint32_t time1, uint32_t time2){
 uint32_t clock(void){
 
 
-    
-}
+
+}*/

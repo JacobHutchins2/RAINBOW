@@ -212,6 +212,14 @@ void get_sensor_data(void) {
         printk("Moisture: %u   Temp: %u.%03u C\n", moisture, temp/1000, temp%1000);     // prints to serial
         delay(0x150); //
         i++;
+
+    // printing moisture to lcd screen
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("Menu:");
+    lcd_set_cursor(1, 0);
+    lcd_print("Moisture: ");
+    lcd_print_int(moisture);
     //}
 }
 
@@ -265,15 +273,44 @@ void lcd_init(void){
 }
 
 void lcd_set_cursor(uint8_t row, uint8_t col){
-    printk("Entering lcd set cursor.\n");
+    //printk("Entering lcd set cursor.\n");
     uint8_t addr = (row == 0) ? 0x00 : 0x40;
     lcd_cmd(0x80 | (addr + col));
-    printk("Entering lcd set cursor.\n");
+    //printk("Entering lcd set cursor.\n");
+}
+
+void lcd_print_int(int value){
+    char buf[12];   // enough for 32-bit int
+    int i = 0;
+
+    if (value == 0) {
+        buf[i++] = '0';
+    } else {
+        if (value < 0) {
+            lcd_data('-');
+            value = -value;
+        }
+
+        int start = i;
+        while (value > 0) {
+            buf[i++] = '0' + (value % 10);
+            value /= 10;
+        }
+
+        // reverse digits
+        for (int j = i - 1; j >= start; j--)
+            lcd_data(buf[j]);
+
+        return;
+    }
+
+    buf[i] = '\0';
+    lcd_print(buf);
 }
 
 void lcd_print(const char *s){
-    printk("Entering lcd print.\n");
+    //printk("Entering lcd print.\n");
     while (*s)
         lcd_data(*s++);
-    printk("Exiting lcd print.\n");
+    //printk("Exiting lcd print.\n");
 }
