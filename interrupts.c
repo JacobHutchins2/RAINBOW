@@ -8,6 +8,8 @@
 // global var
 int blink_en = 1;
 int end_day = 0;
+extern int preset;
+int water;
 
 void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
 
@@ -50,6 +52,7 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
                 if(hour >= 24){
 
                     end_day = 1;    //day reset 
+                    water = 1;
                 }
             }
         }

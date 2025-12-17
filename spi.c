@@ -110,9 +110,9 @@ void tft_gpio_init(void){
     gpio_set_output(TFT_BL);
     gpio_write(TFT_BL, 1);   // Turn on backlight
     gpio_write(13, 1);   // For controlling Q2 Mosfet connected to ground
-    gpio_write(TFT_RST, 0);
-    delay_ms(50);
     gpio_write(TFT_RST, 1);
+    delay_ms(50);
+    gpio_write(TFT_RST, 0);
     delay_ms(150);
     
 }

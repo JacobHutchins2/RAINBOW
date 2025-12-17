@@ -8,6 +8,11 @@
 #include "serial.h"
 #include "string.h"
 #include "printk.h"
+#include "gpio.h"
+
+#define TFT_RST  25     // reset
+
+int preset = 1;
 
 int do_command(int cmd){
 
@@ -19,6 +24,15 @@ int do_command(int cmd){
 	int input_len = 0;
 	int command_prompt = 0;
 	int command_active = 0;
+    static int OnOff = 0;
+    int quit = 0;
+    static int track_preset = 0;
+    static int on_display = 0;
+
+    const char* preset_buf[] = {
+		"preset 1",
+        "preset 2"
+	};
 
     switch(cmd){
 
@@ -30,9 +44,10 @@ int do_command(int cmd){
 
             while(!read_button(2)){
                 get_sensor_data();
+                delay_ms(1000);
             }
             printk("Leaving Case 0:\n");       //debugging
-            delay_ms(67);       // perfect delay
+            delay_ms(607);       // perfect delay
             break;
 
         case 1:
@@ -46,7 +61,7 @@ int do_command(int cmd){
             lcd_set_cursor(0, 0);
             lcd_print("Pump Activated");
 
-            delay_ms(150);
+            delay_ms(3000);
             pwm_set_duty(0);
             printk("Leaving Case 1:\n");       //debugging
             break;
@@ -55,8 +70,93 @@ int do_command(int cmd){
             
             printk("Entering Case 2:\n");       //debugging
             //changing moisture sensing preset
-            // syscalls...
 
+            //print to lcd
+            lcd_cmd(0x01); // clear
+            lcd_set_cursor(0, 0);
+            lcd_print("Presets:");
+            delay_ms(150);
+            lcd_set_cursor(1, 0);
+            lcd_print(preset_buf[0]);
+
+            while(!quit){
+                
+                asm("");        // avoid optimization
+
+		if(on_display){
+
+			// show current command
+			lcd_cmd(0x01); // clear
+			lcd_set_cursor(0, 0);
+			lcd_print("Menu:");
+			lcd_set_cursor(1, 0);
+			lcd_print(preset_buf[track_preset]);
+
+			//resetting on_display
+			on_display = 0;
+		}
+
+		if(read_button(1)){
+
+			printk("button 2 clicked\n");	//debugging
+			// move back a command
+			if(track_preset > 0){
+				track_preset--;
+			}
+			else{
+				// wrap around
+				track_preset = 1;
+			}
+			on_display = 1;
+		}
+
+		if(read_button(2)){
+
+			printk("button 3 clicked\n");	//debugging
+			// do selected preset
+			switch(track_preset){
+                case 0:
+                    //setting preset 1
+                    printk("Setting preset 1\n");
+                    lcd_cmd(0x01); // clear
+                    lcd_set_cursor(0, 0);
+                    lcd_print("Setting Preset 1");
+                    preset = 1;
+                    set_preset();
+                    delay_ms(1000);
+                    break;
+
+                case 1:
+                    //setting preset 2
+                    printk("Setting preset 2\n");
+                    lcd_cmd(0x01); // clear
+                    lcd_set_cursor(0, 0);
+                    lcd_print("Setting Preset 2");
+                    preset = 2;
+                    set_preset();
+                    delay_ms(1000);
+                    break;
+            }
+
+			on_display = 1;
+		}
+
+		if(read_button(3)){
+
+			printk("button 4 clicked\n");
+			// move forward a command
+			if(track_preset < 2){
+				track_preset++;
+			}
+			else{
+				// wrap around
+				track_preset = 0;
+			}
+			on_display = 1;
+		}
+		delay_ms(500);	//short debouncing delay
+            }
+            quit = 0;
             printk("Leaving Case 2:\n");       //debugging
             break;
 
@@ -70,7 +170,15 @@ int do_command(int cmd){
 
         case 4:
 
-            printk("Entering Case 4:\n");       //debugging
+            // put tft to sleep
+            gpio_write(TFT_RST, OnOff);     //toggle
+            OnOff = ~OnOff;
+            delay_ms(50);
+            break;
+
+        case 5:
+
+            printk("Entering Case 5:\n");       //debugging
             //using commands on serial terminal (for debugging purposes)
             while(1){
 

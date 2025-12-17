@@ -86,6 +86,13 @@ void kernel_main(){
     lcd_set_cursor(0, 0);
     lcd_print("PWM INITIALIZED.");
 
+    tft_init();
+    printk("TFT INITIALIZED\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("TFT INITIALIZED.");
+
     // spi init
     spi_init();
     printk("SPI Initialized.\n");
@@ -98,14 +105,6 @@ void kernel_main(){
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("Entering Shell.");
-    lcd_cmd(0x08); // display ON, cursor OFF
-    i2c_write(0x27, 0x00, 1);
-    while(1){
-        /*lcd_cmd(0x08); // display ON, cursor OFF
-        delay_ms(1000);
-        lcd_cmd(0x0C); // display ON, cursor OFF
-        delay_ms(1000);*/
-    }
     delay_ms(150);
     lcd_cmd(0x01); // clear
 

@@ -20,14 +20,15 @@
 uint32_t rainbow_shell(void) {
 
 	// vars
-	int track_command = 0;
-	int on_display = 0;
+	static int track_command = 0;
+	static int on_display = 0;
 
 	const char* cmd_buf[] = {
 		"Read Moisture",
 		"Cycle Pump",
 		"Presets",
 		"Set Time",
+		"TFT Sleep",
 		"Debug Mode"
 	};
 	
@@ -79,7 +80,7 @@ uint32_t rainbow_shell(void) {
 			}
 			else{
 				// wrap around
-				track_command = 4;
+				track_command = 5;
 			}
 			on_display = 1;
 		}
@@ -97,7 +98,7 @@ uint32_t rainbow_shell(void) {
 
 			printk("button 4 clicked\n");
 			// move forward a command
-			if(track_command < 5){
+			if(track_command < 6){
 				track_command++;
 			}
 			else{
@@ -106,7 +107,7 @@ uint32_t rainbow_shell(void) {
 			}
 			on_display = 1;
 		}
-		delay_ms(20);	//short debouncing delay
+		delay_ms(500);	//short debouncing delay
 	}
 
 	printk("Hey! You shouldn't be here!\n");	//debugging

@@ -17,11 +17,14 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 	char *ptr;
 
     switch(r7) {
+
+		/*============================================================================*/
+		/*				   	   For if a user space is ever added					  */
 		case SYSCALL_READ:
 			ptr = (char *)r1;
  
 			if (r0 == 0) {
-				result = serial_read(ptr,(size_t)r2);
+				result = serial_read(ptr,(size_t)r2);	// reads serial line
 			}
 			else {
 				printk("Attempting to read from unsupported fd %d\n",r0);
@@ -34,7 +37,7 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 			ptr=(char *)r1;
 
 			if ((r0 == 1) || (r0 == 2)) {
-				result = serial_write(ptr, (size_t)r2);
+				result = serial_write(ptr, (size_t)r2);	//writes serial line
   
 			}
 			else {
@@ -42,7 +45,9 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 				result = -1;
 			}
 			break;
+		/*============================================================================*/
 
+		// if called can disable the heartbeat
 		case SYSCALL_BLINK:
 			if (r0 == 0) {
 				printk("DISABLING BLINK\n");
@@ -54,6 +59,7 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 			}
 			break;
 
+		// if called the tiem since system start in seconds will be retreived
 		case SYSCALL_TIME:
 			if(r0 != 0){
 				int *int_ptr; 			//point to int
@@ -65,7 +71,8 @@ uint32_t __attribute__((interrupt("SWI"))) swi_handler(
 				result = -1;			//error if null pointer
 			}
 			break;			
-
+		
+		// default
 		default:
 			printk("Unknown syscall %d\n",r7);
 			break;

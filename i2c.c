@@ -177,7 +177,7 @@ static int i2c_write_read(uint8_t base, uint8_t func, uint8_t *buf, uint32_t len
 }
 
 // Read soil capacitance (moisture)
-static uint16_t sensor_moisture(void) {
+uint16_t sensor_moisture(void) {
     uint8_t buf[2];
     if (i2c_write_read(SENSOR_TOUCH_BASE, SENSOR_TOUCH_FUNCTION, buf, 2) < 0) return 0;
     uint16_t raw = (uint16_t)buf[0] << 8 | buf[1];
@@ -204,7 +204,6 @@ static uint32_t sensor_temperature(void) {
 
 
 /*======================================== DISPLAY CODE ========================================*/
-
 static void lcd_i2c_write(uint8_t v){
     i2c_write(LCD_ADDR, &v, 1);
 }
@@ -296,7 +295,7 @@ void lcd_print_int(int value){
     buf[i] = '\0';
     lcd_print(buf);
 }
-
+/*==============================================================================================*/
 
 // getting sensor data 
 void get_sensor_data(void) {

@@ -84,5 +84,6 @@ ili9341.o: ili9341.c ili9341.h
 ui.o: ui.c ui.h
 	$(CROSS)$(CC) $(CFLAGS) -o ui.o -c ui.c
 
+
 clean:
 	rm -f *~ *.o *.map *.elf kernel.img *.dis

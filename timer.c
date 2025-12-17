@@ -6,6 +6,8 @@
 #include "i2c.h"
 #include "printk.h"
 #include "delay.h"
+#include "ui.h"
+#include "pwm.h"
 
 // global counter
 uint32_t tick_counter = 0;
@@ -17,6 +19,9 @@ typedef enum {
     SET_MINUTE,
     SET_DONE
 } time_set_t;
+
+extern int preset;
+int water = 1;
 
 int timer_init(void){
     uint32_t old;
@@ -145,4 +150,38 @@ void get_time(void){
 
     //printing time over serial
     printk("Time:\n     %d%d\n", hour, minute);
+}
+
+// for running the presets
+void set_preset(void){
+    // when the time is right.
+    if((hour == 19) & ((minute == 0) | (minute = 59))){
+        switch(preset){
+
+            //preset 1 water at certain time and moisture level
+            case 1:
+                // retrieve moisture level
+                uint16_t moisture = sensor_moisture();
+                if(moisture < 600){
+                    printk("Running Pump.\n");
+                    pwm_set_duty(1024);
+                    delay_ms(3000);
+                    pwm_set_duty(0);
+                    delay_ms(1000);
+                }
+                break;
+            
+            // preset 2, water at certain time
+            case 2:
+                if(water){
+                    printk("Running Pump.\n");
+                    pwm_set_duty(1024);
+                    delay_ms(8000);
+                    pwm_set_duty(0);
+                    delay_ms(1000);
+                    water = 0;
+                }
+                break;
+        }
+    }
 }
