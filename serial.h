@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 void uart_init(void);
 void uart_putc(unsigned char byte);
 unsigned char uart_getc(void);

@@ -5,6 +5,7 @@
 #include "buttons.h"
 #include "i2c.h"
 #include "printk.h"
+#include "delay.h"
 
 // global counter
 uint32_t tick_counter = 0;
@@ -39,10 +40,29 @@ int timer_init(void){
 
 void clock_set(void){
 
+    printk("Entering Set clock\n");     //debugging
+
     static time_set_t state = SET_HOUR;
+
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("Set Clock");
+
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("Hour:   ");
+    lcd_set_cursor(1, 0);
+    lcd_print("Minute: ");
     
     // waiting for time to be inputted
     while(1){
+
+        asm("");        // avoid optimization
+
+        //var
+        int quit = 0;
     
         // detecting buttons
         int up   = read_button(1); // UP
@@ -56,12 +76,20 @@ void clock_set(void){
             case SET_HOUR:
                 if (up) {
                     hour = hour + 1;
+                    lcd_set_cursor(0, 8);
+                    lcd_print_int(hour);
+                    delay_ms(10);
                 }
                 if (down) {
                     hour = (hour == 0) ? 23 : hour - 1;
+                    lcd_set_cursor(0, 8);
+                    lcd_print_int(hour);
+                    delay_ms(10);
                 }
                 if (ok) {
                     state = SET_MINUTE;
+                    printk("Now setting minute\n");        //debugging
+                    delay_ms(200);
                 }
                 continue;
 
@@ -69,9 +97,15 @@ void clock_set(void){
             case SET_MINUTE:
                 if (up) {
                     minute = (minute + 1);
+                    lcd_set_cursor(1, 8);
+                    lcd_print_int(minute);
+                    delay_ms(10);
                 }
                 if (down) {
                     minute = (minute == 0) ? 59 : minute - 1;
+                    lcd_set_cursor(1, 8);
+                    lcd_print_int(minute);
+                    delay_ms(10);
                 }
                 if (ok) {
                     state = SET_DONE;
@@ -79,17 +113,22 @@ void clock_set(void){
                 continue;
 
             case SET_DONE:
+
+                printk("In DONE state\n");      //debugging
                 // exit time-setting mode
                 // reset tick counter so time resumes cleanly
                 tick_counter = 0;
                 state = SET_HOUR;   // ready for next time-set
+                quit = 1;
                 break;
         }
 
+        if(quit) break; //leave
         // small delay for button debounce
         delay_ms(200);
 
     }
+    printk("Leaving Set clock\n");     //debugging
 }
 
 void get_time(void){

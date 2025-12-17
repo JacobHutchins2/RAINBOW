@@ -12,13 +12,13 @@ kernel.elf: kernel_main.o \
 			serial.o printk.o act_led_init.o \
 			shell_commands.o interrupts.o timer.o \
 			syscalls.o display_io.o spi.o gpio.o tft.o \
-			buttons.o pwm.o font.o ili9341.o
+			buttons.o pwm.o font.o ili9341.o ui.o
 	$(CROSS)ld $(LFLAGS) kernel_main.o \
 			boot.o shell.o string.o i2c.o \
 			serial.o printk.o act_led_init.o \
 			shell_commands.o interrupts.o timer.o \
 			syscalls.o display_io.o spi.o gpio.o tft.o \
-			buttons.o pwm.o font.o ili9341.o \
+			buttons.o pwm.o font.o ili9341.o ui.o \
 			-Map kernel.map -o kernel.elf
 
 kernel_main.o: kernel_main.c
@@ -80,6 +80,9 @@ font.o: font.c font.h
 
 ili9341.o: ili9341.c ili9341.h
 	$(CROSS)$(CC) $(CFLAGS) -o ili9341.o -c ili9341.c
+
+ui.o: ui.c ui.h
+	$(CROSS)$(CC) $(CFLAGS) -o ui.o -c ui.c
 
 clean:
 	rm -f *~ *.o *.map *.elf kernel.img *.dis

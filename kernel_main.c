@@ -39,28 +39,40 @@ void kernel_main(){
     // init lcd
     lcd_init();
     printk("lcd initialized.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("UART INITIALIZED.");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("i2c INITIALIZED.");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("LCD INITIALIZED.");
 
     // active LED start to show a heartbeat
     heartbeat_init();
     printk("Heartbeat started.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("HEARTBEAT INITIALIZED.");
 
     // timer setup
     timer_init();
     printk("Timer Initialized.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("TIMER INITIALIZED.");
 
     // init interrupts
     enable_interrupts();
     printk("Interrupts Enabled.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("INTR INITIALIZED.");
 
@@ -69,22 +81,39 @@ void kernel_main(){
     pwm_init();
     pwm_set_duty(0);    //making sure pump is off
     printk("PWM Initialized.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("PWM INITIALIZED.");
 
     // spi init
     spi_init();
     printk("SPI Initialized.\n");
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("SPI INITIALIZED.");
-    lcd_cmd(0x01); // clear
 
+    delay_ms(100);  //short delay
+    lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("Entering Shell.");
+    lcd_cmd(0x08); // display ON, cursor OFF
+    i2c_write(0x27, 0x00, 1);
+    while(1){
+        /*lcd_cmd(0x08); // display ON, cursor OFF
+        delay_ms(1000);
+        lcd_cmd(0x0C); // display ON, cursor OFF
+        delay_ms(1000);*/
+    }
     delay_ms(150);
     lcd_cmd(0x01); // clear
 
     // enter shell/testing environment
+    printk("Entering Shell.\n");
+    delay_ms(50);
+    lcd_cmd(0x01); // clear
+
     rainbow_shell();
     printk("Why am I here?\n");     // debugging
     lcd_set_cursor(0, 0);

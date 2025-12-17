@@ -4,20 +4,40 @@
 #include "i2c.h"
 #include "pwm.h"
 #include "timer.h"
+#include "buttons.h"
+#include "serial.h"
+#include "string.h"
+#include "printk.h"
 
 int do_command(int cmd){
 
+    printk("Entering Command staging\n");       //debugging
+
+    //vars
+    uint32_t ch;
+	char buffer[256];
+	int input_len = 0;
+	int command_prompt = 0;
+	int command_active = 0;
+
     switch(cmd){
+
+        //asm("");        // avoid optimization
 
         // display moisture level
         case 0:
-            get_sensor_data();
+            printk("Entering Case 0:\n");       //debugging
 
-            while(!read_button(2))
+            while(!read_button(2)){
+                get_sensor_data();
+            }
+            printk("Leaving Case 0:\n");       //debugging
+            delay_ms(67);       // perfect delay
             break;
 
         case 1:
 
+            printk("Entering Case 1:\n");       //debugging
             //activating pump
             pwm_set_duty(1024);
 
@@ -28,23 +48,29 @@ int do_command(int cmd){
 
             delay_ms(150);
             pwm_set_duty(0);
+            printk("Leaving Case 1:\n");       //debugging
             break;
 
         case 2:
             
+            printk("Entering Case 2:\n");       //debugging
             //changing moisture sensing preset
             // syscalls...
 
+            printk("Leaving Case 2:\n");       //debugging
             break;
 
         case 3:
 
+            printk("Entering Case 3:\n");       //debugging
             //setting system time
             clock_set();
+            printk("Leaving Case 3:\n");       //debugging
             break;
 
         case 4:
 
+            printk("Entering Case 4:\n");       //debugging
             //using commands on serial terminal (for debugging purposes)
             while(1){
 
@@ -102,5 +128,5 @@ int do_command(int cmd){
                 
             }
     }
-
+    return 0;
 }

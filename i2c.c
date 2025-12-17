@@ -201,27 +201,7 @@ static uint32_t sensor_temperature(void) {
     return (raw * 1000) >> 16;  // divide by 65536
 }
 
-// getting sensor data 
-void get_sensor_data(void) {
-    int i = 0;
-    //while (i < 4) {
-        uint32_t temp = sensor_temperature();
-        uint16_t moisture = sensor_moisture();
-        
 
-        printk("Moisture: %u   Temp: %u.%03u C\n", moisture, temp/1000, temp%1000);     // prints to serial
-        delay(0x150); //
-        i++;
-
-    // printing moisture to lcd screen
-    lcd_cmd(0x01); // clear
-    lcd_set_cursor(0, 0);
-    lcd_print("Menu:");
-    lcd_set_cursor(1, 0);
-    lcd_print("Moisture: ");
-    lcd_print_int(moisture);
-    //}
-}
 
 /*======================================== DISPLAY CODE ========================================*/
 
@@ -244,7 +224,7 @@ static void lcd_write4(uint8_t nibble, uint8_t rs){
 void lcd_cmd(uint8_t cmd){
     lcd_write4(cmd >> 4, 0);
     lcd_write4(cmd & 0x0F, 0);
-    delay(2000);
+    delay(150);
 }
 
 void lcd_data(uint8_t ch){
@@ -258,11 +238,11 @@ void lcd_init(void){
 
     // Init sequence
     lcd_write4(0x03, 0);
-    delay_ms(50);
+    delay_ms(10);
     lcd_write4(0x03, 0);
-    delay_ms(50);
+    delay_ms(10);
     lcd_write4(0x03, 0);
-    delay_ms(50);
+    delay_ms(10);
     lcd_write4(0x02, 0);  // 4-bit mode
 
     lcd_cmd(0x28); // 4-bit, 2-line, 5x8
@@ -279,13 +259,22 @@ void lcd_set_cursor(uint8_t row, uint8_t col){
     //printk("Entering lcd set cursor.\n");
 }
 
+void lcd_print(const char *s){
+    //printk("Entering lcd print.\n");
+    while (*s)
+        lcd_data(*s++);
+    //printk("Exiting lcd print.\n");
+}
+
 void lcd_print_int(int value){
+    //printk("Entering lcd int print.\n");
     char buf[12];   // enough for 32-bit int
     int i = 0;
 
     if (value == 0) {
         buf[i++] = '0';
-    } else {
+    } 
+    else{
         if (value < 0) {
             lcd_data('-');
             value = -value;
@@ -308,9 +297,22 @@ void lcd_print_int(int value){
     lcd_print(buf);
 }
 
-void lcd_print(const char *s){
-    //printk("Entering lcd print.\n");
-    while (*s)
-        lcd_data(*s++);
-    //printk("Exiting lcd print.\n");
+
+// getting sensor data 
+void get_sensor_data(void) {
+    
+    uint32_t temp = sensor_temperature();
+    uint16_t moisture = sensor_moisture();
+
+    printk("Moisture: %u   Temp: %u.%03u C\n", moisture, (temp/1000)-6, temp%1000);     // prints to serial
+    delay(0x150); //
+
+    // printing moisture to lcd screen
+    lcd_cmd(0x01); // clear
+    lcd_set_cursor(0, 0);
+    lcd_print("Menu:");
+    lcd_set_cursor(1, 0);
+    lcd_print("Moist: ");
+    lcd_print_int(moisture);
+    
 }
