@@ -147,7 +147,7 @@ int do_command(int cmd){
 
                     printk("button 4 clicked\n");
                     // move forward a command
-                    if(track_preset < 2){
+                    if(track_preset < 1){
                         track_preset++;
                     }
                     else{
@@ -158,7 +158,7 @@ int do_command(int cmd){
                 }
 		        delay_ms(500);	//short debouncing delay
             }
-            
+            delay_ms(800); //short delay before leaving
             quit = 1;
             printk("Leaving Case 2:\n");       //debugging
             break;

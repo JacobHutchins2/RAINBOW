@@ -102,7 +102,7 @@ uint32_t rainbow_shell(void) {
 
 			printk("button 4 clicked\n");
 			// move forward a command
-			if(track_command < 6){
+			if(track_command < 5){
 				track_command++;
 			}
 			else{
