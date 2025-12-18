@@ -79,7 +79,7 @@ int do_command(int cmd){
             lcd_set_cursor(1, 0);
             lcd_print(preset_buf[0]);
 
-            while(!quit){
+            while((!quit) | (!read_button(0))){
                 
                 asm("");        // avoid optimization
 
@@ -124,7 +124,7 @@ int do_command(int cmd){
                             preset = 1;
                         
                             delay_ms(1000);
-                            quit = 0;
+                            quit = 1;
                             break;
 
                         case 1:
@@ -136,7 +136,7 @@ int do_command(int cmd){
                             preset = 2;
                             
                             delay_ms(1000);
-                            quit = 0;
+                            quit = 1;
                             break;
                     }
 
@@ -159,7 +159,7 @@ int do_command(int cmd){
 		        delay_ms(500);	//short debouncing delay
             }
             delay_ms(800); //short delay before leaving
-            quit = 1;
+            quit = 0;
             printk("Leaving Case 2:\n");       //debugging
             break;
 

@@ -27,6 +27,9 @@ SECTIONS
 	__text_end = .;
 
 	/****************** Read-Only Data Section ********************/
+	/* printk("...") */
+	/* global vars */
+	/* static const */
 	__rodata_start = .;
 	.rodata :
 	{
