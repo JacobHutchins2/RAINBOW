@@ -159,7 +159,7 @@ int do_command(int cmd){
 		        delay_ms(500);	//short debouncing delay
             }
             
-            quit = 0;
+            quit = 1;
             printk("Leaving Case 2:\n");       //debugging
             break;
 
