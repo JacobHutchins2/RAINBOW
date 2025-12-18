@@ -4,4 +4,4 @@ extern uint32_t minute;
 int timer_init(void);
 void clock_set(void);
 void get_time(void);
-void set_preset(void);
+void run_preset(void);

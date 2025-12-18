@@ -14,8 +14,10 @@
 #include "pwm.h"
 #include "timer.h"
 #include "ui.h"
+#include "interrupts.h"
 
 
+extern int preset_flag;
 
 uint32_t rainbow_shell(void) {
 
@@ -107,6 +109,10 @@ uint32_t rainbow_shell(void) {
 				track_command = 0;
 			}
 			on_display = 1;
+		}
+
+		if(preset_flag){
+			run_preset();
 		}
 		delay_ms(500);	//short debouncing delay
 	}

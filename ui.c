@@ -122,7 +122,7 @@ int do_command(int cmd){
                             lcd_set_cursor(0, 0);
                             lcd_print("Setting Preset 1");
                             preset = 1;
-                            set_preset();
+                        
                             delay_ms(1000);
                             break;
 
@@ -133,7 +133,7 @@ int do_command(int cmd){
                             lcd_set_cursor(0, 0);
                             lcd_print("Setting Preset 2");
                             preset = 2;
-                            set_preset();
+                            
                             delay_ms(1000);
                             break;
                     }

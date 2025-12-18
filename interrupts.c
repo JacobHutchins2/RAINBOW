@@ -10,6 +10,7 @@ int blink_en = 1;
 int end_day = 0;
 extern int preset;
 extern int water;
+int preset_flag;
 
 //interrupt
 void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
@@ -46,10 +47,16 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
             if(end_day == 1){
                 hour = 0;       //hour reset
                 end_day = 0;
+                
             }
             if(minute >= 60){
                 hour++;     // next hour
 
+                if(hour == 19){
+                    preset_flag = 1;    // setting flag
+                }
+                else preset_flag = 0;
+                
                 minute = 0;     //resetting minute
                 if(hour >= 24){
 
