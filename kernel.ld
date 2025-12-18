@@ -1,4 +1,5 @@
-/* linker script for barebones Pi B+ */
+/* kernel.ld based on VMW OS 			   */
+/* Which is based on the Linux kernel code */
 /* http://wiki.osdev.org/Raspberry_Pi_Bare_Bones */
 
 /* Entry point */

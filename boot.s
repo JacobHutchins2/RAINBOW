@@ -1,6 +1,6 @@
 
 /* boot.s based on VMW OS 				   */
-/* Which is based on the Linux kernel code */
+/* Based on the Linux kernel code 		   */
 
 /* Definitions for Mode bits and Interrupt Flags */
 
