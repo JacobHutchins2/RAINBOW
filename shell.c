@@ -68,9 +68,10 @@ uint32_t rainbow_shell(void) {
 			// see time
 			
 			while(!read_button(2)){		//click ok to go back to menu
+				delay_ms(1000);		//second wait
 				get_time();
 			}
-			delay_ms(100);
+			delay_ms(1000);
 		}
 
 		if(read_button(1)){

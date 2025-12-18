@@ -11,6 +11,7 @@ static inline void delay(int32_t count) {       // inline assembly to acoid opti
 // ms delay
 static inline void delay_ms(int ms) {
     for (int i = 0; i < ms; i++) {
-        delay(5000);   // ≈ 1 ms on Pi 1 @ 1.4 MHz
+		asm("");        // avoid optimization
+        delay(5000);   // ≈ 1 ms 
     }
 }

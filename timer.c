@@ -84,18 +84,18 @@ void clock_set(void){
                     hour = hour + 1;        // hour go up
                     lcd_set_cursor(0, 8);
                     lcd_print_int(hour);
-                    delay_ms(10);
+                    delay_ms(500);
                 }
                 if (down) {
                     hour = (hour == 0) ? 23 : hour - 1;     //hour go down
                     lcd_set_cursor(0, 8);
                     lcd_print_int(hour);
-                    delay_ms(10);
+                    delay_ms(500);
                 }
                 if (ok) {
                     state = SET_MINUTE; //change to setting minute
                     printk("Now setting minute\n");        //debugging
-                    delay_ms(200);
+                    delay_ms(800);
                 }
                 continue;
 
@@ -105,13 +105,13 @@ void clock_set(void){
                     minute = (minute + 1);      // minute go up
                     lcd_set_cursor(1, 8);
                     lcd_print_int(minute);
-                    delay_ms(10);
+                    delay_ms(500);
                 }
                 if (down) {
                     minute = (minute == 0) ? 59 : minute - 1;       //minute go down
                     lcd_set_cursor(1, 8);
                     lcd_print_int(minute);
-                    delay_ms(10);
+                    delay_ms(500);
                 }
                 if (ok) {
                     state = SET_DONE;       // done setting time
@@ -151,7 +151,7 @@ void get_time(void){
     lcd_print_int(minute);
 
     //printing time over serial
-    printk("Time:\n     %d%d\n", hour, minute);
+    printk("Time:  %d%d\n", hour, minute);
 }
 
 // for running the presets

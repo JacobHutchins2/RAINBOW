@@ -61,7 +61,7 @@ int do_command(int cmd){
             lcd_set_cursor(0, 0);
             lcd_print("Pump Activated");
 
-            delay_ms(5000);
+            delay_ms(12500);
             pwm_set_duty(0);
             printk("Leaving Case 1:\n");       //debugging
             break;
@@ -124,6 +124,7 @@ int do_command(int cmd){
                             preset = 1;
                         
                             delay_ms(1000);
+                            quit = 0;
                             break;
 
                         case 1:
@@ -135,6 +136,7 @@ int do_command(int cmd){
                             preset = 2;
                             
                             delay_ms(1000);
+                            quit = 0;
                             break;
                     }
 
@@ -176,12 +178,12 @@ int do_command(int cmd){
             gpio_write(TFT_RST, OnOff);     //toggle
             OnOff = 0;
             gpio_write(20, 0);      // turn off
-            delay_ms(150);  //small delay
+            delay_ms(800);  //small delay
             while(!read_button(2));
             gpio_write(TFT_RST, OnOff);     //toggle
             lcd_init();
             OnOff = 1;
-            delay_ms(150);
+            delay_ms(800);
             break;
 
         case 5:
