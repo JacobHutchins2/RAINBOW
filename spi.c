@@ -191,10 +191,7 @@ void tft_fill(uint16_t color) {
         spi_write_stream(px, 2);
 }
 
-void tft_draw_char(uint16_t x, uint16_t y,
-                   char c,
-                   uint16_t fg,
-                   uint16_t bg) {
+void tft_draw_char(uint16_t x, uint16_t y, char c, uint16_t fg, uint16_t bg) {
 
     if (c < FONT_FIRST || c > FONT_LAST)
         c = '?';

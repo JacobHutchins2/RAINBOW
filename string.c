@@ -79,11 +79,7 @@ void parse_input(char *string) {
 	if(compare(string, "test")){
 		printk("\n");
         tft_fill_color(0xF800); // fill screen with red
-		/*tft_write_cmd(0x2C); // Memory Write
-		uint8_t red[2] = { 0xF8, 0x00 }; // RED
-		for (int i = 0; i < 240*320; i++) {
-			tft_write_buf(red, 2);
-		}*/
+		
 		while(1);
         uart_putc('\r');
 		uart_putc('\n');   // line feed

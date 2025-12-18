@@ -1,9 +1,5 @@
-/* Minimal assembly language startup code */
-/* This does just enough to prepare a C   */
-/* Program for execution on Raspberry-Pi  */
 
-/* Pi2/Pi3 code based on code from */
-/* https://github.com/vanvught/rpidmx512/firmware-template/vectors.s */
+/* boot.s based on VMW OS 				   */
 /* Which is based on the Linux kernel code */
 
 /* Definitions for Mode bits and Interrupt Flags */
@@ -30,19 +26,12 @@
 /* Make _start globally visible so that the linker can see it */
 .globl _start
 
-/* The bootloader starts, loads are executable, and enters */
-/* execution at 0x8000 with the following values set.      */
-/* r0 = boot method (usually 0 on pi)       		   */
-/* r1 = hardware type (usually 0xc42 on pi) 		   */
-/* r2 = points to device tree file			   */
-/*	on older firmware points to ATAGS (usually 0x100)  */
-
 _start:
 
 	/* Setup the interrupt vectors */
 	/* This code gets copied to address 0x0000 (irq vector table)	*/
 	/* The next instructions jumps us to the "reset" vector		*/
-	/* Where we continued our boot code.				*/
+	/* Where boot code is continued.				*/
 	ldr	pc, reset_addr
 	ldr	pc, undefined_instruction_addr
 	ldr	pc, software_interrupt_addr
@@ -79,7 +68,6 @@ reset:
 	mov	r3, #(CPSR_MODE_SVC | CPSR_MODE_IRQ_DISABLE | CPSR_MODE_FIQ_DISABLE )
 	msr	cpsr_c, r3
 
-	/* TODO: setup the other stacks?	*/
 
 	/* copy irq vector into place.  Preserve r0,r1,r2 */
 	/* Vector defaults to 0x0 */
@@ -95,7 +83,7 @@ reset:
 
 
 	/* clear the bss section */
-	/* This has not been optimized */
+
 	ldr	r4, =__bss_start
 	ldr	r9, =__bss_end
 	mov	r5, #0
@@ -111,7 +99,7 @@ clear_bss:
 	ldr r3, =kernel_main
 	blx r3
 
-	/* We only reach this if the code we call exits */
+	/* Only used if the kernel program ends */
 wait_forever:
 	wfe	/* wait for event -- put CPU to sleep */
 	b wait_forever

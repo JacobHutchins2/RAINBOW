@@ -43,6 +43,7 @@ int timer_init(void){
     return 0;
 }
 
+// setting clock for system
 void clock_set(void){
 
     printk("Entering Set clock\n");     //debugging
@@ -80,40 +81,40 @@ void clock_set(void){
             //setting hour
             case SET_HOUR:
                 if (up) {
-                    hour = hour + 1;
+                    hour = hour + 1;        // hour go up
                     lcd_set_cursor(0, 8);
                     lcd_print_int(hour);
                     delay_ms(10);
                 }
                 if (down) {
-                    hour = (hour == 0) ? 23 : hour - 1;
+                    hour = (hour == 0) ? 23 : hour - 1;     //hour go down
                     lcd_set_cursor(0, 8);
                     lcd_print_int(hour);
                     delay_ms(10);
                 }
                 if (ok) {
-                    state = SET_MINUTE;
+                    state = SET_MINUTE; //change to setting minute
                     printk("Now setting minute\n");        //debugging
                     delay_ms(200);
                 }
                 continue;
 
             //setting minute
-            case SET_MINUTE:
+            case SET_MINUTE:    
                 if (up) {
-                    minute = (minute + 1);
+                    minute = (minute + 1);      // minute go up
                     lcd_set_cursor(1, 8);
                     lcd_print_int(minute);
                     delay_ms(10);
                 }
                 if (down) {
-                    minute = (minute == 0) ? 59 : minute - 1;
+                    minute = (minute == 0) ? 59 : minute - 1;       //minute go down
                     lcd_set_cursor(1, 8);
                     lcd_print_int(minute);
                     delay_ms(10);
                 }
                 if (ok) {
-                    state = SET_DONE;
+                    state = SET_DONE;       // done setting time
                 }
                 continue;
 
@@ -136,6 +137,7 @@ void clock_set(void){
     printk("Leaving Set clock\n");     //debugging
 }
 
+// retreive time
 void get_time(void){
 
     // show current time
@@ -153,7 +155,7 @@ void get_time(void){
 }
 
 // for running the presets
-void set_preset(void){
+void run_preset(void){
     // when the time is right.
     if((hour == 19) & ((minute == 0) | (minute = 59))){
         switch(preset){
@@ -163,6 +165,7 @@ void set_preset(void){
                 // retrieve moisture level
                 uint16_t moisture = sensor_moisture();
                 if(moisture < 600){
+                    //run preset 1
                     printk("Running Pump.\n");
                     pwm_set_duty(1024);
                     delay_ms(3000);
@@ -174,12 +177,13 @@ void set_preset(void){
             // preset 2, water at certain time
             case 2:
                 if(water){
+                    // run preset 2
                     printk("Running Pump.\n");
                     pwm_set_duty(1024);
                     delay_ms(8000);
                     pwm_set_duty(0);
                     delay_ms(1000);
-                    water = 0;
+                    water = 0;  // only run once a day
                 }
                 break;
         }

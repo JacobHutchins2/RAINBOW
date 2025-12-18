@@ -5,6 +5,7 @@
 #include "mmio.h"
 #include "printk.h"
 #include "delay.h"
+#include "gpio.h"
 
 // Sensor function registers
 #define SENSOR_ADDR 0x36
@@ -14,22 +15,13 @@
 #define SENSOR_STATUS_TEMP   0x04
 #define LCD_ADDR 0x27
 
-#if 0
-#define LCD_D4  (1 << 0)
-#define LCD_D5  (1 << 1)
-#define LCD_D6  (1 << 2)
-#define LCD_D7  (1 << 3)
-#define LCD_EN  (1 << 4)
-#define LCD_RW  (1 << 5)
-#define LCD_RS  (1 << 6)
-#define LCD_BL  (1 << 7)
-#endif
 #define LCD_RS  (1 << 0)
 #define LCD_RW  (1 << 1)
 #define LCD_EN  (1 << 2)
 #define LCD_BL  (1 << 3)
 
 void i2c_init(void) {
+
     // Set to ALT0 for I2C1 
 	uint32_t temp_reg;
 
@@ -117,9 +109,12 @@ int i2c_read(uint8_t addr, uint8_t *data, uint32_t len) {
     return 0;
 }
 
-
+// scan function not currently working
+// was planned to be used for debugging
 int i2c_scan(void) {
-    /*printk("Start scan.\n");
+    #if 0
+    /* This code reset the kernel for some reason when it ran */
+    printk("Start scan.\n");
     for (uint8_t addr = 0x30; addr <= 0x77; addr++) {
         int device_addr = i2c_write(addr, 0x0, 1);       // attempting to write to device
         delay(1500);
@@ -131,7 +126,9 @@ int i2c_scan(void) {
         }
         printk("The program is ending.\n");
     }
-    return 0;*/
+    return 0;
+    #endif
+    // sadly this scan doesn't work
     for (uint8_t addr = 0x03; addr <= 0x77; addr++) {
         //bcm2835_write(I2C_S, I2C_S_CLKT | I2C_S_ERR | I2C_S_DONE); // Clear status flags
         bcm2835_write(I2C_C, I2C_C_CLEAR);      // clearing FIFO
@@ -204,38 +201,51 @@ static uint32_t sensor_temperature(void) {
 
 
 /*======================================== DISPLAY CODE ========================================*/
+// Write a single byte to the LCD 
 static void lcd_i2c_write(uint8_t v){
     i2c_write(LCD_ADDR, &v, 1);
 }
 
+// Generate an enable pulse to latch data into the LCD
 static void lcd_pulse(uint8_t data){
-    lcd_i2c_write(data | LCD_EN);
+    lcd_i2c_write(data | LCD_EN);       //high
     delay(150);
-    lcd_i2c_write(data & ~LCD_EN);
+    lcd_i2c_write(data & ~LCD_EN);      //low
     delay(150);
 }
 
+// Send a 4-bit nibble to the LCD
+// rs = 0 for command, rs = LCD_RS for data
 static void lcd_write4(uint8_t nibble, uint8_t rs){
     uint8_t data = LCD_BL | rs | (nibble << 4);
     lcd_pulse(data);
 }
 
+// Send an 8-bit command to the LCD (split into two 4-bit writes)
 void lcd_cmd(uint8_t cmd){
     lcd_write4(cmd >> 4, 0);
     lcd_write4(cmd & 0x0F, 0);
     delay(150);
 }
 
+// Send a single character to the LCD
 void lcd_data(uint8_t ch){
     lcd_write4(ch >> 4, LCD_RS);
     lcd_write4(ch & 0x0F, LCD_RS);
 }
 
+// Initialize the LCD in 4-bit mode
 void lcd_init(void){
     printk("Entering lcd init.\n");
+       
+    //powering lcd from gpio 20
+    gpio_set_output(20); 
+    gpio_set_output(21); 
+    gpio_write(20, 1);      // turn on
+    gpio_write(21, 1);
     delay_ms(150);  // wait after power-up
 
-    // Init sequence
+    // Init restart sequence
     lcd_write4(0x03, 0);
     delay_ms(10);
     lcd_write4(0x03, 0);
@@ -244,6 +254,7 @@ void lcd_init(void){
     delay_ms(10);
     lcd_write4(0x02, 0);  // 4-bit mode
 
+    // LCD config
     lcd_cmd(0x28); // 4-bit, 2-line, 5x8
     lcd_cmd(0x0C); // display ON, cursor OFF
     lcd_cmd(0x06); // entry mode
@@ -258,6 +269,7 @@ void lcd_set_cursor(uint8_t row, uint8_t col){
     //printk("Entering lcd set cursor.\n");
 }
 
+//print to lcd
 void lcd_print(const char *s){
     //printk("Entering lcd print.\n");
     while (*s)
@@ -265,27 +277,32 @@ void lcd_print(const char *s){
     //printk("Exiting lcd print.\n");
 }
 
+//print an int to lcd
 void lcd_print_int(int value){
     //printk("Entering lcd int print.\n");
     char buf[12];   // enough for 32-bit int
     int i = 0;
 
+    // handles 0 case
     if (value == 0) {
         buf[i++] = '0';
     } 
     else{
+        // Handle negative numbers
         if (value < 0) {
             lcd_data('-');
             value = -value;
         }
 
         int start = i;
+        // Convert digits to ASCII (does backwards)
+        // starts with least significant digit first
         while (value > 0) {
             buf[i++] = '0' + (value % 10);
             value /= 10;
         }
 
-        // reverse digits
+        // reverse digits (because ASCII was backwards)
         for (int j = i - 1; j >= start; j--)
             lcd_data(buf[j]);
 

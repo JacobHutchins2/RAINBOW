@@ -4,6 +4,10 @@
 #include "syscalls.h"
 #include "shell_commands.h"
 
+
+// for if userspace is being used
+
+// uart write
 int putchar(int ch) {
 
 	uint32_t result;
@@ -18,6 +22,7 @@ int putchar(int ch) {
 
 }
 
+// get input from uart
 int getchar(void) {
 
 	int32_t ch=0;

@@ -53,6 +53,7 @@ size_t uart_write(const unsigned char *buffer, size_t size){
     return i;
 }
 
+
 int32_t uart_getc_noblock(void) {
 
 	/* Check Flags Register */

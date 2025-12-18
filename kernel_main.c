@@ -16,8 +16,6 @@
 #include "gpio.h"
 #include "buttons.h"
 #include "pwm.h"
-#include "ili9341.h"
-// inlcude header of header files
 
 uint32_t io_base = 0x20000000;
 uint32_t act_led_gpio = 47;
@@ -25,8 +23,6 @@ uint32_t act_led_gpio = 47;
 
 //The start of the end.
 void kernel_main(){
-
-    //gpio_write(5, 1);   // Turn on backlight
 
     // hardware initialization / interrupts
     uart_init();
@@ -39,15 +35,15 @@ void kernel_main(){
     // init lcd
     lcd_init();
     printk("lcd initialized.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("UART INITIALIZED.");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("i2c INITIALIZED.");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("LCD INITIALIZED.");
@@ -55,7 +51,7 @@ void kernel_main(){
     // active LED start to show a heartbeat
     heartbeat_init();
     printk("Heartbeat started.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("HEARTBEAT INITIALIZED.");
@@ -63,7 +59,7 @@ void kernel_main(){
     // timer setup
     timer_init();
     printk("Timer Initialized.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("TIMER INITIALIZED.");
@@ -71,7 +67,7 @@ void kernel_main(){
     // init interrupts
     enable_interrupts();
     printk("Interrupts Enabled.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("INTR INITIALIZED.");
@@ -81,14 +77,14 @@ void kernel_main(){
     pwm_init();
     pwm_set_duty(0);    //making sure pump is off
     printk("PWM Initialized.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("PWM INITIALIZED.");
 
     tft_init();
     printk("TFT INITIALIZED\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("TFT INITIALIZED.");
@@ -96,12 +92,12 @@ void kernel_main(){
     // spi init
     spi_init();
     printk("SPI Initialized.\n");
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("SPI INITIALIZED.");
 
-    delay_ms(100);  //short delay
+    delay_ms(200);  //short delay
     lcd_cmd(0x01); // clear
     lcd_set_cursor(0, 0);
     lcd_print("Entering Shell.");

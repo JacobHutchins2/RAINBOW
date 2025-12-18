@@ -89,6 +89,7 @@ uint32_t rainbow_shell(void) {
 
 			printk("button 3 clicked\n");	//debugging
 			// do selected command
+			printk("track_command: %d\n", track_command);	//debugging
 			do_command(track_command);
 
 			on_display = 1;

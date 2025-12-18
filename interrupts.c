@@ -9,8 +9,9 @@
 int blink_en = 1;
 int end_day = 0;
 extern int preset;
-int water;
+extern int water;
 
+//interrupt
 void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
 
 	
@@ -18,6 +19,7 @@ void __attribute__((interrupt("IRQ"))) interrupt_handler(void) {
 
     pending = bcm2835_read(IRQ_BASIC_PENDING);
 
+    //running on timer.c clock interrupt
     if(pending & IRQ_BASIC_PENDING_TIMER){
         bcm2835_write(TIMER_IRQ_CLEAR, 0);
         
