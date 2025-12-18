@@ -190,7 +190,15 @@ int do_command(int cmd){
 
             printk("Entering Case 5:\n");       //debugging
             //using commands on serial terminal (for debugging purposes)
-            while(1){
+            while(!read_button(0)){
+
+                //print to lcd
+                lcd_cmd(0x01); // clear
+                lcd_set_cursor(0, 0);
+                lcd_print("Entering");
+                delay_ms(150);
+                lcd_set_cursor(1, 0);
+                lcd_print("Debug Mode");
 
                 if(command_prompt == 0){
                     printk("--> ");	// printing shell prompt
@@ -245,6 +253,17 @@ int do_command(int cmd){
                     
                 
             }
+
+            //print to lcd
+            lcd_cmd(0x01); // clear
+            lcd_set_cursor(0, 0);
+            lcd_print("Entering");
+            delay_ms(150);
+            lcd_set_cursor(1, 0);
+            lcd_print("Debug Mode");
+            delay_ms(500);      // small delay
+
+            break;
     }
 
     printk("Leaving command staging\n");        //debugging
